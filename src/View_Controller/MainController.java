@@ -84,7 +84,7 @@ public class MainController extends Application implements Initializable {
         Inventory.addPart(windows);
         Inventory.addPart(wipers);
 
-        Inventory.updateProduct(1,new Product(3, "FUCK ME", 3, 2, 0, 10));
+//        Inventory.updateProduct(1,new Product(3, "FUCK ME", 3, 2, 0, 10));
 
         launch(args);
     }

@@ -19,7 +19,7 @@
                   <ToggleGroup fx:id="partSource" />
                </toggleGroup>
             </RadioButton>
-            <RadioButton layoutX="200.0" layoutY="26.0" mnemonicParsing="false" onAction="#checkRadioButton" text="Outsourced" toggleGroup="$partSource" />
+            <RadioButton fx:id="addPartOutsourcedButton" layoutX="200.0" layoutY="26.0" mnemonicParsing="false" onAction="#checkRadioButton" text="Outsourced" toggleGroup="$partSource" />
             <TextField fx:id="addPartIDTextField" disable="true" layoutX="148.0" layoutY="76.0" promptText="Auto Gen- Disabled" />
             <Label layoutX="54.0" layoutY="120.0" text="Name" />
             <Label layoutX="54.0" layoutY="160.0" text="Inv" />
@@ -27,13 +27,13 @@
             <Label layoutX="54.0" layoutY="240.0" text="Max" />
             <Label fx:id="invSourceLabel" layoutX="54.0" layoutY="280.0" text="Machine ID" />
             <Label layoutX="339.0" layoutY="240.0" text="Min" />
-            <TextField layoutX="148.0" layoutY="116.0" />
-            <TextField layoutX="148.0" layoutY="156.0" />
-            <TextField layoutX="148.0" layoutY="196.0" />
-            <TextField layoutX="148.0" layoutY="237.0" />
-            <TextField layoutX="148.0" layoutY="276.0" />
-            <TextField layoutX="398.0" layoutY="236.0" />
-            <Button layoutX="313.0" layoutY="344.0" mnemonicParsing="false" text="Save" />
+            <TextField fx:id="addPartNameTF" layoutX="148.0" layoutY="116.0" />
+            <TextField fx:id="addPartInvTF" layoutX="148.0" layoutY="156.0" />
+            <TextField fx:id="addPartPriceTF" layoutX="148.0" layoutY="196.0" />
+            <TextField fx:id="addPartMaxTF" layoutX="148.0" layoutY="237.0" />
+            <TextField fx:id="addPartMachineIDCompNameTF" layoutX="148.0" layoutY="276.0" />
+            <TextField fx:id="addPartMinTF" layoutX="398.0" layoutY="236.0" />
+            <Button layoutX="313.0" layoutY="344.0" mnemonicParsing="false" onAction="#addPartSubmit" text="Save" />
             <Button layoutX="372.0" layoutY="344.0" mnemonicParsing="false" onAction="#cancelAddPart" text="Cancel" />
          </children>
       </AnchorPane>

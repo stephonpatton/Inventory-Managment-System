@@ -13,7 +13,7 @@
                 <Label layoutX="16.0" layoutY="140.0" text="Inv" />
                 <Label layoutX="16.0" layoutY="180.0" text="Price" />
                 <Label layoutX="16.0" layoutY="220.0" text="Max" />
-                <TextField disable="true" layoutX="81.0" layoutY="56.0" promptText="Auto Gen - Disabled" />
+                <TextField fx:id="addProductIdTF" disable="true" layoutX="81.0" layoutY="56.0" promptText="Auto Gen - Disabled" />
                 <TextField layoutX="81.0" layoutY="96.0" />
                 <TextField layoutX="81.0" layoutY="136.0" />
                 <TextField layoutX="81.0" layoutY="176.0" />
