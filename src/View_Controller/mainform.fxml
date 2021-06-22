@@ -20,8 +20,8 @@
                </font>
             </Label>
             <Button fx:id="mainPartAddButton" layoutX="310.0" layoutY="330.0" mnemonicParsing="false" onAction="#openAddPartWindow" text="Add" />
-            <Button fx:id="mainPartModifyButton" layoutX="360.0" layoutY="330.0" mnemonicParsing="false" onAction="#openModifyPartWindow" text="Modify" />
-            <Button fx:id="mainPartDeleteButton" layoutX="426.0" layoutY="330.0" mnemonicParsing="false" text="Delete" />
+            <Button fx:id="mainPartModifyButton" layoutX="360.0" layoutY="330.0" mnemonicParsing="false" onAction="#getSelectedRow" text="Modify" />
+            <Button fx:id="mainPartDeleteButton" layoutX="426.0" layoutY="330.0" mnemonicParsing="false" onAction="#deletePartFromTable" text="Delete" />
             <TextField fx:id="mainPartSearchField" alignment="TOP_LEFT" layoutX="289.0" layoutY="2.0" prefHeight="25.0" prefWidth="166.0" promptText="Search by Part ID or Name" />
             <TableView fx:id="partsTableView" layoutX="10.0" layoutY="30.0" prefHeight="295.0" prefWidth="470.0">
               <columns>

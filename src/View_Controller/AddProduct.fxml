@@ -14,11 +14,11 @@
                 <Label layoutX="16.0" layoutY="180.0" text="Price" />
                 <Label layoutX="16.0" layoutY="220.0" text="Max" />
                 <TextField fx:id="addProductIdTF" disable="true" layoutX="81.0" layoutY="56.0" promptText="Auto Gen - Disabled" />
-                <TextField layoutX="81.0" layoutY="96.0" />
-                <TextField layoutX="81.0" layoutY="136.0" />
-                <TextField layoutX="81.0" layoutY="176.0" />
-                <TextField layoutX="81.0" layoutY="216.0" />
-                <TextField layoutX="288.0" layoutY="216.0" />
+                <TextField fx:id="addProductName" layoutX="81.0" layoutY="96.0" />
+                <TextField fx:id="addProductInv" layoutX="81.0" layoutY="136.0" />
+                <TextField fx:id="addProductPrice" layoutX="81.0" layoutY="176.0" />
+                <TextField fx:id="addProductMax" layoutX="81.0" layoutY="216.0" />
+                <TextField fx:id="addProductMin" layoutX="288.0" layoutY="216.0" />
                 <Label layoutX="253.0" layoutY="220.0" text="Min" />
                 <TextField layoutX="725.0" layoutY="12.0" prefHeight="25.0" prefWidth="161.0" promptText="Search by Part ID or Name" />
                 <TableView layoutX="483.0" layoutY="47.0" prefHeight="140.0" prefWidth="405.0">
@@ -45,7 +45,7 @@
                 </TableView>
                 <Button layoutX="782.0" layoutY="189.0" mnemonicParsing="false" text="Add" />
                 <Button layoutX="729.0" layoutY="362.0" mnemonicParsing="false" text="Remove Associated Part" />
-                <Button layoutX="727.0" layoutY="400.0" mnemonicParsing="false" text="Save" />
+                <Button layoutX="727.0" layoutY="400.0" mnemonicParsing="false" onAction="#addProductSubmit" text="Save" />
                 <Button layoutX="821.0" layoutY="400.0" mnemonicParsing="false" onAction="#cancelAddProduct" text="Cancel" />
             </children>
         </AnchorPane>

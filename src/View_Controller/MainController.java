@@ -3,6 +3,7 @@ package View_Controller;
 import Model.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,32 +26,25 @@ import static Model.Inventory.*;
 
 
 public class MainController extends Application implements Initializable {
-    @FXML
-    private TableView<Product> productTableView;
+    @FXML private TableView<Product> productTableView;
+    @FXML private  TableColumn<Product,Integer> productIdCol;
+    @FXML private  TableColumn<Product,String> productNameCol;
+    @FXML private  TableColumn<Product,Integer> productInvCol;
+    @FXML private  TableColumn<Product,Integer> productPriceCol;
+    @FXML private TableView<Part> partsTableView;
+    @FXML private TableColumn<Part, Integer> partIdCol;
+    @FXML private TableColumn<Part, String> partNameCol;
+    @FXML private TableColumn<Part, Integer> partInvCol;
+    @FXML private TableColumn<Part, Integer> partPriceCol;
 
-    @FXML
-    private  TableColumn<Product,Integer> productIdCol;
-    @FXML
-    private  TableColumn<Product,String> productNameCol;
-    @FXML
-    private  TableColumn<Product,Integer> productInvCol;
-    @FXML
-    private  TableColumn<Product,Integer> productPriceCol;
+    private static Part tempPart;
+    private static int tempPartIndex;
 
-    @FXML
-    private TableView<Part> partsTableView;
-
-    @FXML
-    private TableColumn<Part, Integer> partIdCol;
-    @FXML
-    private TableColumn<Part, String> partNameCol;
-    @FXML
-    private TableColumn<Part, Integer> partInvCol;
-    @FXML
-    private TableColumn<Part, Integer> partPriceCol;
-
-
-
+    /**
+     * Starts application and loads up main page (fxml)
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/mainform.fxml")));
@@ -60,7 +54,12 @@ public class MainController extends Application implements Initializable {
         primaryStage.show();
     }
 
-
+    /**
+     * Main method for the entire program. Loads in sample data and uses FXML launch command to start
+     * @param args
+     */
+    //TODO: Tell evaluators where javadocs folder is
+    //TODO: Comment everything
     public static void main(String[] args) {
         //Below is sample data for the application to load (includes parts and products)
         Product bike = new Product(1, "Bike", 2, 1, 0, 20);
@@ -84,11 +83,16 @@ public class MainController extends Application implements Initializable {
         Inventory.addPart(windows);
         Inventory.addPart(wipers);
 
-//        Inventory.updateProduct(1,new Product(3, "FUCK ME", 3, 2, 0, 10));
+        Inventory.updateProduct(1,new Product(getProductIDCount(), "FUCK ME", 3, 2, 0, 10));
 
         launch(args);
     }
 
+    /**
+     * Loads in the controller that has the data for tables when the page is loaded
+     * @param url
+     * @param rb
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -109,6 +113,10 @@ public class MainController extends Application implements Initializable {
         partPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
 
+    /**
+     * Opens up the Add Part page when the add button is pressed
+     * @param actionEvent
+     */
     public void openAddPartWindow(ActionEvent actionEvent) {
         Parent root;
         try {
@@ -126,6 +134,7 @@ public class MainController extends Application implements Initializable {
         }
     }
 
+    //TODO: Maybe delete if fully functional later
     public void openModifyPartWindow(ActionEvent actionEvent) {
         Parent root;
         try {
@@ -143,6 +152,7 @@ public class MainController extends Application implements Initializable {
         }
     }
 
+    //TODO: Maybe delete if fully functional later
     public void openModifyProductWindow(ActionEvent actionEvent) {
         Parent root;
         try {
@@ -159,6 +169,7 @@ public class MainController extends Application implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     public void openAddProductWindow(ActionEvent actionEvent) {
         Parent root;
@@ -177,15 +188,78 @@ public class MainController extends Application implements Initializable {
         }
     }
 
-    public void closeApp(ActionEvent actionEvent) {
+    /**
+     * Closes application when the exit button is pressed
+     */
+    public void closeApp() {
         Platform.exit();
     }
 
+    /**
+     * Updates the parts table (useful for changes in table)
+     */
     public void updatePartsTable() {
         partsTableView.setItems(Inventory.getAllParts());
     }
 
+    /**
+     * Updates the products table (useful for changes in table)
+     */
     public void updateProductsTable() {
         productTableView.setItems(Inventory.getAllProducts());
+    }
+
+    /**
+     * Gets the selected part object in a row in the parts table (used for modifying part)
+     * @param event when modify button is pressed
+     * @throws IOException if a row is not selected
+     */
+    public void getSelectedRow(ActionEvent event) throws IOException {
+//        boolean inHouse = partsTableView.getSelectionModel().getSelectedItem().getClass().getName().equals("Model.InHouse");
+        try {
+            tempPart = partsTableView.getSelectionModel().getSelectedItem();
+            tempPartIndex = getAllParts().indexOf(tempPart);
+            Parent partsModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyPart.fxml")));
+            Scene scene = new Scene(partsModify);
+            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            window.setScene(scene);
+            window.show();
+        } catch(Exception e) {
+            System.err.println("\nPlease select a part to modify");
+        }
+    }
+
+    /**
+     * Gets the index of the part to modify
+     * @return index of part to modify
+     */
+    public static int partToModify() {
+        return tempPartIndex;
+    }
+
+    //TODO: Confirmation dialog for deletion
+
+    /**
+     * Deletes a part from the table after the delete button is pressed
+     */
+    public void deletePartFromTable() {
+        tempPart = partsTableView.getSelectionModel().getSelectedItem();
+        tempPartIndex = getAllParts().indexOf(tempPart);
+        if(deletePart(tempPart)) {
+            setPartCount(getPartIDCount() - 1);
+            System.out.println("Successfully deleted");
+        } else {
+            System.out.println("Was not deleted");
+        }
+    }
+
+    //TODO: Delete product from table implementation
+    //TODO: Confirmation dialog for deletion
+
+    /**
+     * Deletes a product from the table after the delete button is pressed
+     */
+    public void deleteProductFromTable() {
+
     }
 }

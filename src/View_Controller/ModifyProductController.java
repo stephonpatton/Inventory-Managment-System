@@ -8,12 +8,18 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ModifyProductController {
+
+    //TODO: Implemented modify product (bring data from selected product)
+    //TODO: Must populate table with associated parts as well
+    //TODO: Can delete associated parts and also add more
+
     public void cancelModifyPart(ActionEvent actionEvent) {
         Parent root;
         try {
-            root = FXMLLoader.load(getClass().getResource("../View_Controller/mainform.fxml"));
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/mainform.fxml")));
             Stage stage = new Stage();
             stage.setTitle("Main Page");
             stage.setScene(new Scene(root, 1100, 500));

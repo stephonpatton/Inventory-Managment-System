@@ -1,5 +1,6 @@
 package Model;
 
+import View_Controller.MainController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,8 +9,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class Inventory {
-
-
 //    private static ObservableList<Part> allParts = FXCollections.observableArrayList(); this is for debugging/console logging
     private static ObservableList<Part> allParts = FXCollections.observableArrayList();
     private static ObservableList<Product> allProducts = FXCollections.observableArrayList();
@@ -47,6 +46,7 @@ public class Inventory {
         return null;
     }
 
+    //TODO: Maybe use for search? If not then implement search function for part and product
     public static Product lookupProduct(int productId) {
         for(Product allProduct : allProducts) {
             if(allProduct.getId() == productId) {
@@ -88,12 +88,15 @@ public class Inventory {
         return tempList;
     }
 
+    //TODO: Maybe change function... needs to update without changing index (use function w modify)
     public static void updatePart(int index, Part selectedPart) {
         //TODO: Add part to given index
         //TODO: See if the old index should be deleted or if certain aspects of the object are only updated
     }
 
+    //TODO: Maybe change function... needs to update without changing index (use function w modify)
     public static void updateProduct(int index, Product newProduct) {
+        productIDCount++;
         allProducts.add(index, newProduct);
         System.out.println("PRODUCT UPDATED HERES THE UPDATE: ");
         System.out.println(allProducts.get(index).getName());
@@ -101,10 +104,12 @@ public class Inventory {
         System.out.println(allProducts.get(index+1).getName());
     }
 
+    //TODO: Implement deletion for part (get full object and delete from observablelist)
     public static boolean deletePart(Part selectedPart) {
         return allParts.remove(selectedPart);
     }
 
+    //TODO: Implement deletion for product (get full object and delete from observablelist)
     public static boolean deleteProduct(Product selectedProduct) {
         return allProducts.remove(selectedProduct);
     }
@@ -117,5 +122,8 @@ public class Inventory {
         return allProducts;
     }
 
+    public static void setPartCount(int partIDCount) {
+        Inventory.partIDCount = partIDCount;
+    }
 
 }

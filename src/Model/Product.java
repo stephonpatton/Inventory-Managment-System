@@ -13,12 +13,12 @@ public class Product {
     private int max;
 
     public Product(int id, String name, double price, int stock, int min, int max) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
-        this.min = min;
-        this.max = max;
+        setId(id);
+        setName(name);
+        setPrice(price);
+        setStock(stock);
+        setMin(min);
+        setMax(max);
     }
 
     public int getId() {
@@ -69,10 +69,12 @@ public class Product {
         this.max = max;
     }
 
+    //TODO: Make sure this works properly
     public void addAssociatePart(Part part) {
         associatedParts.add(part);
     }
 
+    //TODO: Make sure it works properly (should remove associated part from product)
     public boolean deleteAssociatedPart(Part selectedAssociatedPart) {
         for(Part part : associatedParts) {
             if(part.equals(selectedAssociatedPart)) {
@@ -86,6 +88,7 @@ public class Product {
         return false;
     }
 
+    //TODO: Check to make sure this works properly
     public ObservableList<Part> getAssociatedParts() {
         return associatedParts;
     }

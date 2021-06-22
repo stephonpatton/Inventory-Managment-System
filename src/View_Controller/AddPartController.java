@@ -2,6 +2,7 @@ package View_Controller;
 import Model.InHouse;
 import Model.Inventory;
 import Model.Outsourced;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,7 +59,6 @@ public class AddPartController implements Initializable {
     }
 
     public boolean checkAddPartName() {
-        //TODO: Maybe break these up more
         if(addPartNameTF.getLength() == 0 || addPartNameTF.getText().matches("[0-9]*")) {
             System.out.println("Please provide a name");
             return false;
@@ -133,6 +133,10 @@ public class AddPartController implements Initializable {
         }
     }
 
+    /**
+     * Checks to make sure data is valid and then calls createPart to save data and closes current window
+     * @param actionEvent when the save button is pressed
+     */
     public void addPartSubmit(ActionEvent actionEvent) {
         if(checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
         && checkAddPartMin() && checkAddPartSource()) {
@@ -141,6 +145,9 @@ public class AddPartController implements Initializable {
         }
     }
 
+    /**
+     * Creates the part object after all data is submitted and adds it to the ObservableList
+     */
     public void createPart() {
         String partName = addPartNameTF.getText();
         int partPrice = Integer.parseInt(addPartPriceTF.getText());
@@ -163,9 +170,16 @@ public class AddPartController implements Initializable {
         }
     }
 
+    /**
+     * Initializes the controller upon loading of the AddPart screen
+     * @param url required with method
+     * @param rb required with method
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         partID = Inventory.getPartIDCount();
         addPartIDTextField.setText("AUTO GEN: " + partID);
     }
+
+
 }
