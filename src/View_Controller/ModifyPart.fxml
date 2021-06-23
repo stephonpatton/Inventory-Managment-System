@@ -33,7 +33,7 @@
                 <TextField fx:id="modifyPartMaxTF" layoutX="148.0" layoutY="237.0" />
                 <TextField fx:id="modifyPartMachineCompTF" layoutX="148.0" layoutY="276.0" />
                 <TextField fx:id="modifyPartMinTF" layoutX="398.0" layoutY="236.0" />
-                <Button layoutX="313.0" layoutY="344.0" mnemonicParsing="false" text="Save" />
+                <Button fx:id="modifyPartSubmit" layoutX="313.0" layoutY="344.0" mnemonicParsing="false" onAction="#modifyPartSave" text="Save" />
                 <Button layoutX="372.0" layoutY="344.0" mnemonicParsing="false" onAction="#cancelModifyPart" text="Cancel" />
             </children>
         </AnchorPane>

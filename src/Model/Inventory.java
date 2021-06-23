@@ -13,7 +13,7 @@ public class Inventory {
     private static ObservableList<Part> allParts = FXCollections.observableArrayList();
     private static ObservableList<Product> allProducts = FXCollections.observableArrayList();
 
-    private static int partIDCount = 1;
+    private static int partIDCount =1;
     private static int productIDCount = 1;
 
     public static int getPartIDCount() {
@@ -91,6 +91,7 @@ public class Inventory {
     //TODO: Maybe change function... needs to update without changing index (use function w modify)
     public static void updatePart(int index, Part selectedPart) {
         //TODO: Add part to given index
+        allParts.set(index, selectedPart);
         //TODO: See if the old index should be deleted or if certain aspects of the object are only updated
     }
 

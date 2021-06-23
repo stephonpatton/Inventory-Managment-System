@@ -46,19 +46,19 @@ public class AddProductController implements Initializable {
     public void createProduct() {
         String productName = addProductName.getText();
         int productStock = Integer.parseInt(addProductInv.getText());
-        int productPrice = Integer.parseInt(addProductPrice.getText());
+        double productPrice = Double.parseDouble(addProductPrice.getText());
         int productMin = Integer.parseInt(addProductMin.getText());
         int productMax = Integer.parseInt(addProductMax.getText());
 
         if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
         && checkAddProductMax() && checkAddProductMin()) {
-            Product newProduct = new Product(Inventory.getProductIDCount(), productName, productStock, productPrice, productMax, productMin);
+            Product newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
             Inventory.addProduct(newProduct);
         }
     }
 
     public boolean checkAddProductPrice() {
-        if(addProductPrice.getText().matches("[0-9]*") && addProductPrice.getLength() != 0) {
+        if((addProductPrice.getText().matches("[0-9]*") || Double.parseDouble(addProductPrice.getText()) % 1 != 0) && addProductPrice.getLength() != 0) {
             return true;
         } else {
             System.out.println("Please provide numbers for the price.");
@@ -76,7 +76,7 @@ public class AddProductController implements Initializable {
     }
 
     public boolean checkAddProductMax() {
-        if(addProductMax.getText().matches("[0-9]*") && addProductMax.getLength() != 0) {
+        if(addProductMax.getText().matches("[0-9\\.]*") && addProductMax.getLength() != 0) {
             return true;
         } else {
             System.out.println("Please provide a number for max");

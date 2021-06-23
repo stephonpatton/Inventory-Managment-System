@@ -1,8 +1,7 @@
 package View_Controller;
-import Model.InHouse;
+import Model.InhousePart;
 import Model.Inventory;
-import Model.Outsourced;
-import javafx.collections.ObservableList;
+import Model.OutsourcedPart;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -78,7 +77,7 @@ public class AddPartController implements Initializable {
     }
 
     public boolean checkAddPartPrice() {
-        if(addPartPriceTF.getText().matches("[0-9]*") && addPartPriceTF.getLength() != 0) {
+        if((addPartPriceTF.getText().matches("[0-9]*") || Double.parseDouble(addPartPriceTF.getText()) % 1 != 0) && addPartPriceTF.getLength() != 0) {
             return true;
         } else {
             System.out.println("Please provide numbers for price.");
@@ -150,7 +149,7 @@ public class AddPartController implements Initializable {
      */
     public void createPart() {
         String partName = addPartNameTF.getText();
-        int partPrice = Integer.parseInt(addPartPriceTF.getText());
+        double partPrice = Double.parseDouble(addPartPriceTF.getText());
         int partStock = Integer.parseInt(addPartInvTF.getText());
         int partMin = Integer.parseInt(addPartMinTF.getText());
         int partMax = Integer.parseInt(addPartMaxTF.getText());
@@ -159,12 +158,12 @@ public class AddPartController implements Initializable {
         if(checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
                 && checkAddPartMin() && checkAddPartSource()) {
             if(sourceButton.isSelected()) {
-                InHouse newInhousePart = new InHouse(partID, partName, partPrice, partStock, partMin, partMax,
+                InhousePart newInhousePart = new InhousePart(partID, partName, partPrice, partStock, partMin, partMax,
                         Integer.parseInt(partMachineId));
                 Inventory.addPart(newInhousePart);
             }
             else if(addPartOutsourcedButton.isSelected()) {
-                Outsourced outsourcedPart = new Outsourced(partID, partName, partPrice, partStock, partMin, partMax, partMachineId);
+                OutsourcedPart outsourcedPart = new OutsourcedPart(partID, partName, partPrice, partStock, partMin, partMax, partMachineId);
                 Inventory.addPart(outsourcedPart);
             }
         }

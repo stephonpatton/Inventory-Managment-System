@@ -65,12 +65,12 @@ public class MainController extends Application implements Initializable {
         Product bike = new Product(1, "Bike", 2, 1, 0, 20);
         Product motorcycle = new Product(2, "Motorcycle", 2, 1, 0, 20);
 
-        Part axle = new InHouse(1, "Axle", 204.99, 1, 1, 20, 200);
-        Part tires = new InHouse(2, "Tires", 102.90, 200, 1, 20, 10);
-        Part brakes = new InHouse(3, "Brakes", 15.99, 1000, 1, 20, 1);
+        Part axle = new InhousePart(1, "Axle", 204.99, 1, 1, 20, 200);
+        Part tires = new InhousePart(2, "Tires", 102.90, 200, 1, 20, 10);
+        Part brakes = new InhousePart(3, "Brakes", 15.99, 1000, 1, 20, 1);
 
-        Part windows = new Outsourced(4, "Windows", 529, 3, 1, 50, "Glass R US");
-        Part wipers = new Outsourced(5, "Wipers", 9.99, 52, 1, 760, "Wipers R US");
+        Part windows = new OutsourcedPart(4, "Windows", 529, 3, 1, 50, "Glass R US");
+        Part wipers = new OutsourcedPart(5, "Wipers", 9.99, 52, 1, 760, "Wipers R US");
 
         //Adding Products to inventory
         Inventory.addProduct(bike);
@@ -82,8 +82,8 @@ public class MainController extends Application implements Initializable {
         Inventory.addPart(brakes);
         Inventory.addPart(windows);
         Inventory.addPart(wipers);
-
-        Inventory.updateProduct(1,new Product(getProductIDCount(), "FUCK ME", 3, 2, 0, 10));
+//
+//        Inventory.updateProduct(1,new Product(getProductIDCount(), "FUCK ME", 3, 2, 0, 10));
 
         launch(args);
     }
@@ -229,11 +229,15 @@ public class MainController extends Application implements Initializable {
         }
     }
 
+    public static Part partToModify() {
+        return tempPart;
+    }
+
     /**
      * Gets the index of the part to modify
      * @return index of part to modify
      */
-    public static int partToModify() {
+    public static int partIndexToModify() {
         return tempPartIndex;
     }
 
@@ -246,7 +250,8 @@ public class MainController extends Application implements Initializable {
         tempPart = partsTableView.getSelectionModel().getSelectedItem();
         tempPartIndex = getAllParts().indexOf(tempPart);
         if(deletePart(tempPart)) {
-            setPartCount(getPartIDCount() - 1);
+            //if you want to make auto gen id 1 less than before because of deletion
+//            setPartCount(getPartIDCount() - 1);
             System.out.println("Successfully deleted");
         } else {
             System.out.println("Was not deleted");
