@@ -281,7 +281,6 @@ public class MainController extends Application implements Initializable {
         }
     }
 
-    //TODO: Delete product from table implementation after association/deassociation code/implementation
     //TODO: Confirmation dialog for deletion
 
     /**
@@ -296,4 +295,8 @@ public class MainController extends Application implements Initializable {
             System.out.println("Was not deleted");
         }
     }
+
+    //TODO: Implement search part
+
+    //TODO: Implement search product
 }

@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static View_Controller.MainController.productToModify;
+
 public class AddProductController implements Initializable {
     private int productID;
     @FXML private TextField addProductIdTF;
@@ -45,7 +47,9 @@ public class AddProductController implements Initializable {
     @FXML private TableColumn<Part, Double> addedPartsPrice;
 
     private Part partToAdd;
+    private Part partToRemove;
     ObservableList<Part> tempList = FXCollections.observableArrayList();
+    ObservableList<Part> tempRemoveList = FXCollections.observableArrayList();
 
     public void cancelAddProduct(ActionEvent actionEvent) {
         Parent root;
@@ -158,7 +162,6 @@ public class AddProductController implements Initializable {
     }
 
     public void addPartToProduct() {
-        //TODO: Check if item is selected; if it is then add part to product object, add to bottom table (maybe remove from top?)
         partToAdd = availablePartTableView.getSelectionModel().getSelectedItem();
         tempList.add(partToAdd);
 
@@ -169,5 +172,9 @@ public class AddProductController implements Initializable {
         addedPartsPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
 
+    public void removeAddedParts() {
+        partToRemove = addProductAddedPartsTableView.getSelectionModel().getSelectedItem();
+        tempList.remove(partToRemove);
+    }
 
 }

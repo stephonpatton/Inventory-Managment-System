@@ -69,12 +69,10 @@ public class Product {
         this.max = max;
     }
 
-    //TODO: Make sure this works properly
     public void addAssociatePart(Part part) {
         associatedParts.add(part);
     }
 
-    //TODO: Make sure it works properly (should remove associated part from product)
     public boolean deleteAssociatedPart(Part selectedAssociatedPart) {
         for(Part part : associatedParts) {
             if(part.equals(selectedAssociatedPart)) {
@@ -88,7 +86,6 @@ public class Product {
         return false;
     }
 
-    //TODO: Check to make sure this works properly
     public ObservableList<Part> getAssociatedParts() {
         return associatedParts;
     }

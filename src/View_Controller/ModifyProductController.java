@@ -3,6 +3,8 @@ package View_Controller;
 import Model.Inventory;
 import Model.Part;
 import Model.Product;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,13 +48,17 @@ public class ModifyProductController implements Initializable {
     @FXML private TableColumn<Part, Integer> addedPartsInv;
     @FXML private TableColumn<Part, Double> addedPartsPrice;
 
+    private Part partToRemove;
+    private Part partToAdd;
+    ObservableList<Part> tempList = FXCollections.observableArrayList();
+    private int tempPartIndex;
+
     int indexOfProduct = productIndexToModify();
 
     //TODO: Implemented modify product (bring data from selected product)
-    //TODO: Must populate table with associated parts as well
-    //TODO: Can delete associated parts and also add more
+    //TODO: Add more associated parts
 
-    public void cancelModifyPart(ActionEvent actionEvent)  {
+    public void cancelModifyProduct(ActionEvent actionEvent)  {
         Parent root;
         try {
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/mainform.fxml")));
@@ -77,7 +83,6 @@ public class ModifyProductController implements Initializable {
         availablePartsInvCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         availablePartsPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -116,6 +121,98 @@ public class ModifyProductController implements Initializable {
         addedPartsPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
 
-    //TODO: Remove associated part when remove is pressed
+    public void removeAddedParts() {
+        try {
+            partToRemove = addedPartsTable.getSelectionModel().getSelectedItem();
+            if (productToModify().deleteAssociatedPart(partToRemove)) {
+                System.out.println("successfully deleted association");
+            } else {
+                System.out.println("Association was not deleted");
+            }
+        }catch(Exception e) {
+            System.err.println("Please select a part to remove association");
+        }
+    }
 
+    public void addParts() {
+        partToAdd = availablePartTableView.getSelectionModel().getSelectedItem();
+
+        productToModify().addAssociatePart(partToAdd);
+        populateAddedPartsTable();
+    }
+
+    public void saveModifiedProduct(ActionEvent actionEvent) {
+        if(!checkDifferences()) {
+            System.out.println("Created product");
+        }
+        cancelModifyProduct(actionEvent);
+    }
+
+    private boolean checkDifferences() {
+        if(checkProductNameDiff() && checkProductInvDiff() && checkProductPriceDiff() && checkProductMax()
+        && checkProductMinDiff()) {
+            return true;
+        } else {
+            createProduct();
+            return false;
+        }
+    }
+
+    //TODO: Figure out errors for product
+    public boolean checkProductMinDiff() {
+//        int productMin = 0;
+//        try {
+//            productMin = Integer.parseInt(modifyProductMinTF.getText());
+//        }catch(NumberFormatException e) {
+//            System.err.println("Please enter a number for min");
+//        }
+//
+//
+//        if(modifyProductMinTF.getText().matches("[0-9]*") && modifyProductMinTF.getLength() != 0) {
+//            return productMin == Inventory.getAllProducts().get(indexOfProduct).getMin();
+//        } else {
+//            System.out.println("Please provide a number for min");
+//            return false;
+//        }
+        if(modifyProductMinTF.getText().matches("[0-9]*") && modifyProductMinTF.getLength() != 0) {
+            return true;
+        } else {
+            System.out.println("ENTER SOMETHING");
+            return false;
+        }
+    }
+
+    private boolean checkProductMax() {
+        int productMax = Integer.parseInt(modifyProductMaxTF.getText());
+        return productMax == Inventory.getAllProducts().get(productIndexToModify()).getMax();
+    }
+
+    private boolean checkProductPriceDiff() {
+        double price = Double.parseDouble(modifyProductPriceTF.getText());
+        return price == Inventory.getAllProducts().get(productIndexToModify()).getPrice();
+    }
+
+    private boolean checkProductInvDiff() {
+        int productStock = Integer.parseInt(modifyProductInvTF.getText());
+        return productStock == Inventory.getAllProducts().get(productIndexToModify()).getStock();
+    }
+
+    private boolean checkProductNameDiff() {
+        return modifyProductNameTF.getText().equals(Inventory.getAllProducts().get(productIndexToModify()).getName());
+    }
+
+    public void createProduct() {
+        String productName = modifyProductNameTF.getText();
+        int productStock = Integer.parseInt(modifyProductInvTF.getText());
+        double productPrice = Double.parseDouble(modifyProductPriceTF.getText());
+        int productMax = Integer.parseInt(modifyProductMaxTF.getText());
+        int productMin = Integer.parseInt(modifyProductMinTF.getText());
+
+        Product newProduct = new Product(productToModify().getId(), productName, productPrice, productStock, productMin, productMax);
+        for(Part part : productToModify().getAssociatedParts()) {
+            newProduct.addAssociatePart(part);
+        }
+        Inventory.updateProduct(productIndexToModify(), newProduct);
+        System.out.println("Product updated successfully");
+    }
 }

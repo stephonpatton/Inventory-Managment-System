@@ -87,29 +87,19 @@ public class Inventory {
         return tempList;
     }
 
-    //TODO: Maybe change function... needs to update without changing index (use function w modify)
     public static void updatePart(int index, Part selectedPart) {
-        //TODO: Add part to given index
         allParts.set(index, selectedPart);
-        //TODO: See if the old index should be deleted or if certain aspects of the object are only updated
     }
 
     //TODO: Maybe change function... needs to update without changing index (use function w modify)
     public static void updateProduct(int index, Product newProduct) {
-        productIDCount++;
-        allProducts.add(index, newProduct);
-        System.out.println("PRODUCT UPDATED HERES THE UPDATE: ");
-        System.out.println(allProducts.get(index).getName());
-        System.out.println("Heres the next index name");
-        System.out.println(allProducts.get(index+1).getName());
+        allProducts.set(index, newProduct);
     }
 
-    //TODO: Implement deletion for part (get full object and delete from observablelist)
     public static boolean deletePart(Part selectedPart) {
         return allParts.remove(selectedPart);
     }
 
-    //TODO: Implement deletion for product (get full object and delete from observablelist)
     public static boolean deleteProduct(Product selectedProduct) {
         return allProducts.remove(selectedProduct);
     }

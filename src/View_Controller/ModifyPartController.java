@@ -36,8 +36,6 @@ public class ModifyPartController implements Initializable {
     @FXML private TextField modifyPartMinTF;
     @FXML private TextField modifyPartMachineCompTF;
 
-
-
     int indexOfPart = partIndexToModify();
 
     public void checkRadioButton() {
@@ -71,7 +69,6 @@ public class ModifyPartController implements Initializable {
         int partStock = Integer.parseInt(modifyPartInvTF.getText());
         int partMax = Integer.parseInt(modifyPartMaxTF.getText());
         int partMin = Integer.parseInt(modifyPartMinTF.getText());
-
 
         if(sourceButton.isSelected()) {
             int machineID = Integer.parseInt(modifyPartMachineCompTF.getText());
@@ -118,10 +115,6 @@ public class ModifyPartController implements Initializable {
         }
             return isTheSame;
     }
-
-    //TODO: Submit functionality (include checkdiff method)
-
-    //TODO: Figure out update method and how to overwrite vs delete and add again
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
