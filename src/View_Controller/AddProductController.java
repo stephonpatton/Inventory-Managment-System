@@ -1,7 +1,10 @@
 package View_Controller;
 
 import Model.Inventory;
+import Model.Part;
 import Model.Product;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +12,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -25,6 +31,21 @@ public class AddProductController implements Initializable {
     @FXML private TextField addProductPrice;
     @FXML private TextField addProductMax;
     @FXML private TextField addProductMin;
+
+    @FXML private TableView<Part> availablePartTableView;
+    @FXML private TableColumn<Part, Integer> availablePartsPartIdCol;
+    @FXML private TableColumn<Part, String> availablePartsNameCol;
+    @FXML private TableColumn<Part, Integer> availablePartsInvCol;
+    @FXML private TableColumn<Part, Double> availablePartsPriceCol;
+
+    @FXML private TableView<Part> addProductAddedPartsTableView;
+    @FXML private TableColumn<Part, Integer> addedPartsId;
+    @FXML private TableColumn<Part, String> addedPartsName;
+    @FXML private TableColumn<Part, Integer> addedPartsInv;
+    @FXML private TableColumn<Part, Double> addedPartsPrice;
+
+    private Part partToAdd;
+    ObservableList<Part> tempList = FXCollections.observableArrayList();
 
     public void cancelAddProduct(ActionEvent actionEvent) {
         Parent root;
@@ -43,18 +64,19 @@ public class AddProductController implements Initializable {
         }
     }
 
-    public void createProduct() {
-        String productName = addProductName.getText();
-        int productStock = Integer.parseInt(addProductInv.getText());
-        double productPrice = Double.parseDouble(addProductPrice.getText());
-        int productMin = Integer.parseInt(addProductMin.getText());
-        int productMax = Integer.parseInt(addProductMax.getText());
-
+    public Product createProduct() {
+        Product newProduct = null;
         if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
-        && checkAddProductMax() && checkAddProductMin()) {
-            Product newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+                && checkAddProductMax() && checkAddProductMin()) {
+            String productName = addProductName.getText();
+            int productStock = Integer.parseInt(addProductInv.getText());
+            double productPrice = Double.parseDouble(addProductPrice.getText());
+            int productMin = Integer.parseInt(addProductMin.getText());
+            int productMax = Integer.parseInt(addProductMax.getText());
+            newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
             Inventory.addProduct(newProduct);
         }
+        return newProduct;
     }
 
     public boolean checkAddProductPrice() {
@@ -76,7 +98,7 @@ public class AddProductController implements Initializable {
     }
 
     public boolean checkAddProductMax() {
-        if(addProductMax.getText().matches("[0-9\\.]*") && addProductMax.getLength() != 0) {
+        if(addProductMax.getText().matches("[0-9]*") && addProductMax.getLength() != 0) {
             return true;
         } else {
             System.out.println("Please provide a number for max");
@@ -106,10 +128,46 @@ public class AddProductController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         productID = Inventory.getProductIDCount();
         addProductIdTF.setText("AUTO GEN: " + productID);
+        try {
+            populateProductTable();
+        }catch(Exception e) {
+            System.err.println("No data to populate data");
+        }
     }
 
+    public void populateProductTable() {
+        availablePartTableView.setItems(Inventory.getAllParts());
+
+        availablePartsPartIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        availablePartsNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        availablePartsInvCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        availablePartsPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+    }
+
+
     public void addProductSubmit(ActionEvent actionEvent) {
-        createProduct();
+        Product product = createProduct();
+        addAllPartsToProduct(tempList,product);
         cancelAddProduct(actionEvent);
     }
+
+    private void addAllPartsToProduct(ObservableList<Part> list, Product product) {
+        for(Part part : list) {
+            product.addAssociatePart(part);
+        }
+    }
+
+    public void addPartToProduct() {
+        //TODO: Check if item is selected; if it is then add part to product object, add to bottom table (maybe remove from top?)
+        partToAdd = availablePartTableView.getSelectionModel().getSelectedItem();
+        tempList.add(partToAdd);
+
+        addProductAddedPartsTableView.setItems(tempList);
+        addedPartsId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        addedPartsName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        addedPartsInv.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        addedPartsPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+    }
+
+
 }

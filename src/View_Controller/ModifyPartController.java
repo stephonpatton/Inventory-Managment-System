@@ -11,9 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -37,6 +35,8 @@ public class ModifyPartController implements Initializable {
     @FXML private TextField modifyPartMaxTF;
     @FXML private TextField modifyPartMinTF;
     @FXML private TextField modifyPartMachineCompTF;
+
+
 
     int indexOfPart = partIndexToModify();
 
@@ -75,8 +75,8 @@ public class ModifyPartController implements Initializable {
 
         if(sourceButton.isSelected()) {
             int machineID = Integer.parseInt(modifyPartMachineCompTF.getText());
-            InhousePart newInhousePart = new InhousePart(partIndexToModify(), partName, partPrice, partStock, partMin, partMax, machineID);
-            Inventory.addPart(newInhousePart);
+            InhousePart newInhousePart = new InhousePart(partToModify().getId(), partName, partPrice, partStock, partMin, partMax, machineID);
+            Inventory.updatePart(partIndexToModify(), newInhousePart);
         }
         else if(outsourcedButton.isSelected()) {
             String compName = modifyPartMachineCompTF.getText();
@@ -92,16 +92,12 @@ public class ModifyPartController implements Initializable {
      * Returns true if no differences
      * Returns false if differences are present
      */
-    //TODO: Check differences in each field and compare with data in Observable list
     public boolean checkDifferences() {
         if(checkPartNameDiff() && checkPartInvDiff() && checkPartPriceDiff() && checkPartMaxDiff()
         && checkPartMinDiff() && checkPartMachineCompDiff()) {
             return true;
-            //TODO: Means it is the same so just hide screen upon save button click
         } else {
-//            Inventory.deletePart(Inventory.getAllParts().get(partIndexToModify()));
             createPart();
-            //TODO: Write data to new part object, delete existing part, -1 from product index, add part to list (preferably at same index), add 1 to list
             return false;
         }
     }
@@ -131,7 +127,7 @@ public class ModifyPartController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Part partToModify = Inventory.getAllParts().get(indexOfPart);
         partId = partToModify.getId();
-        modifyPartIDTextField.setText("AUTO GEN: " + partId);
+        modifyPartIDTextField.setText(String.valueOf(partId));
         modifyPartNameTF.setText(partToModify.getName());
         modifyPartInvTF.setText(Integer.toString(partToModify.getStock()));
         modifyPartPriceTF.setText(Double.toString( partToModify.getPrice()));
@@ -146,6 +142,7 @@ public class ModifyPartController implements Initializable {
             invSourceLabel.setText("Company Name");
             outsourcedButton.setSelected(true);
         }
+
     }
 
     public void modifyPartSave(ActionEvent actionEvent) {
@@ -178,5 +175,6 @@ public class ModifyPartController implements Initializable {
         int min = Integer.parseInt(modifyPartMinTF.getText());
         return min == Inventory.getAllParts().get(partIndexToModify()).getMin();
     }
+
 }
 

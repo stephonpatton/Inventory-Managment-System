@@ -30,15 +30,18 @@ public class MainController extends Application implements Initializable {
     @FXML private  TableColumn<Product,Integer> productIdCol;
     @FXML private  TableColumn<Product,String> productNameCol;
     @FXML private  TableColumn<Product,Integer> productInvCol;
-    @FXML private  TableColumn<Product,Integer> productPriceCol;
+    @FXML private  TableColumn<Product,Double> productPriceCol;
     @FXML private TableView<Part> partsTableView;
     @FXML private TableColumn<Part, Integer> partIdCol;
     @FXML private TableColumn<Part, String> partNameCol;
     @FXML private TableColumn<Part, Integer> partInvCol;
-    @FXML private TableColumn<Part, Integer> partPriceCol;
+    @FXML private TableColumn<Part, Double> partPriceCol;
 
     private static Part tempPart;
     private static int tempPartIndex;
+
+    private static Product tempProduct;
+    private static int tempProductIndex;
 
     /**
      * Starts application and loads up main page (fxml)
@@ -212,10 +215,8 @@ public class MainController extends Application implements Initializable {
     /**
      * Gets the selected part object in a row in the parts table (used for modifying part)
      * @param event when modify button is pressed
-     * @throws IOException if a row is not selected
      */
-    public void getSelectedRow(ActionEvent event) throws IOException {
-//        boolean inHouse = partsTableView.getSelectionModel().getSelectedItem().getClass().getName().equals("Model.InHouse");
+    public void getSelectedPart(ActionEvent event) {
         try {
             tempPart = partsTableView.getSelectionModel().getSelectedItem();
             tempPartIndex = getAllParts().indexOf(tempPart);
@@ -229,8 +230,30 @@ public class MainController extends Application implements Initializable {
         }
     }
 
+    public void getSelectedProduct(ActionEvent event) throws IOException {
+        try {
+            tempProduct = productTableView.getSelectionModel().getSelectedItem();
+            tempProductIndex = getAllProducts().indexOf(tempProduct);
+            Parent productModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyProduct.fxml")));
+            Scene scene = new Scene(productModify);
+            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            window.setScene(scene);
+            window.show();
+        } catch(Exception e) {
+            System.err.println("\nPlease select a product to modify");
+        }
+    }
+
     public static Part partToModify() {
         return tempPart;
+    }
+
+    public static Product productToModify() {
+        return tempProduct;
+    }
+
+    public static int productIndexToModify() {
+        return tempProductIndex;
     }
 
     /**
@@ -258,13 +281,19 @@ public class MainController extends Application implements Initializable {
         }
     }
 
-    //TODO: Delete product from table implementation
+    //TODO: Delete product from table implementation after association/deassociation code/implementation
     //TODO: Confirmation dialog for deletion
 
     /**
      * Deletes a product from the table after the delete button is pressed
      */
     public void deleteProductFromTable() {
-
+        tempProduct = productTableView.getSelectionModel().getSelectedItem();
+        tempProductIndex = getAllProducts().indexOf(tempProduct);
+        if(deleteProduct(tempProduct)) {
+            System.out.println("Successfully deleted product");
+        } else {
+            System.out.println("Was not deleted");
+        }
     }
 }
