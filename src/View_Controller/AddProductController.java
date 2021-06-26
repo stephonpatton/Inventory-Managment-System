@@ -69,17 +69,14 @@ public class AddProductController implements Initializable {
     }
 
     public Product createProduct() {
-        Product newProduct = null;
-        if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
-                && checkAddProductMax() && checkAddProductMin()) {
-            String productName = addProductName.getText();
-            int productStock = Integer.parseInt(addProductInv.getText());
-            double productPrice = Double.parseDouble(addProductPrice.getText());
-            int productMin = Integer.parseInt(addProductMin.getText());
-            int productMax = Integer.parseInt(addProductMax.getText());
-            newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
-            Inventory.addProduct(newProduct);
-        }
+        Product newProduct;
+        String productName = addProductName.getText();
+        int productStock = Integer.parseInt(addProductInv.getText());
+        double productPrice = Double.parseDouble(addProductPrice.getText());
+        int productMin = Integer.parseInt(addProductMin.getText());
+        int productMax = Integer.parseInt(addProductMax.getText());
+        newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+        Inventory.addProduct(newProduct);
         return newProduct;
     }
 
@@ -150,9 +147,12 @@ public class AddProductController implements Initializable {
 
 
     public void addProductSubmit(ActionEvent actionEvent) {
-        Product product = createProduct();
-        addAllPartsToProduct(tempList,product);
-        cancelAddProduct(actionEvent);
+        if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
+                && checkAddProductMax() && checkAddProductMin()) {
+            Product product = createProduct();
+            addAllPartsToProduct(tempList,product);
+            cancelAddProduct(actionEvent);
+        }
     }
 
     private void addAllPartsToProduct(ObservableList<Part> list, Product product) {
@@ -177,4 +177,5 @@ public class AddProductController implements Initializable {
         tempList.remove(partToRemove);
     }
 
+    //TODO: Add search part functionality
 }

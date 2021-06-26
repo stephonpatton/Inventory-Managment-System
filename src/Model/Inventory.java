@@ -91,7 +91,6 @@ public class Inventory {
         allParts.set(index, selectedPart);
     }
 
-    //TODO: Maybe change function... needs to update without changing index (use function w modify)
     public static void updateProduct(int index, Product newProduct) {
         allProducts.set(index, newProduct);
     }

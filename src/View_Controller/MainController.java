@@ -4,6 +4,8 @@ import Model.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,11 +15,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -36,6 +40,9 @@ public class MainController extends Application implements Initializable {
     @FXML private TableColumn<Part, String> partNameCol;
     @FXML private TableColumn<Part, Integer> partInvCol;
     @FXML private TableColumn<Part, Double> partPriceCol;
+
+    @FXML private TextField mainPartSearchField;
+    @FXML private TextField mainProductSearchField;
 
     private static Part tempPart;
     private static int tempPartIndex;
@@ -296,7 +303,97 @@ public class MainController extends Application implements Initializable {
         }
     }
 
-    //TODO: Implement search part
+    public ObservableList<Part> searchPartById(String query) {
+        ObservableList<Part> searchPart = FXCollections.observableArrayList();
+        for(Part part : Inventory.getAllParts()) {
+            if((part.getId() == Integer.parseInt(query))) {
+                searchPart.add(part);
+            }
+        }
+        if(searchPart.size() == 0 ) {
+            System.out.println("No ID matches for part");
+        }
+        return searchPart;
+    }
 
-    //TODO: Implement search product
+    public ObservableList<Part> searchPartByName(String query) {
+        ObservableList<Part> searchPart = FXCollections.observableArrayList();
+        for(Part part : Inventory.getAllParts()) {
+            if(part.getName().toLowerCase().contains(query.toLowerCase())) {
+                searchPart.add(part);
+            }
+        }
+        if(searchPart.size() == 0 ) {
+            System.out.println("No results for part name");
+        }
+        return searchPart;
+    }
+
+    public void searchPart() {
+        String query = mainPartSearchField.getText();
+        ObservableList<Part> idList;
+        if(query.matches("[0-9]*") && query.length() != 0) {
+            idList = searchPartById(query);
+            if(idList.size() == 0) {
+                updatePartsTable();
+            } else {
+                partsTableView.setItems(idList);
+            }
+        } else {
+            ObservableList<Part> tmpList = searchPartByName(query);
+            if(tmpList.size() == 0) {
+                updatePartsTable();
+            } else {
+                partsTableView.setItems(tmpList);
+            }
+        }
+    }
+
+    public ObservableList<Product> searchProductById(String query) {
+        ObservableList<Product> idList = FXCollections.observableArrayList();
+
+        for(Product product : Inventory.getAllProducts()) {
+            if((product.getId() == Integer.parseInt(query))) {
+                idList.add(product);
+            }
+        }
+        if(idList.size() == 0 ) {
+            System.out.println("No ID matches for product");
+        }
+
+        return idList;
+    }
+
+    public ObservableList<Product> searchProductByName(String query) {
+        ObservableList<Product> searchProduct = FXCollections.observableArrayList();
+        for(Product product : Inventory.getAllProducts()) {
+            if(product.getName().toLowerCase().contains(query.toLowerCase())) {
+                searchProduct.add(product);
+            }
+        }
+        if(searchProduct.size() == 0) {
+            System.out.println("No results for product name");
+        }
+        return searchProduct;
+    }
+
+    public void searchProduct() {
+        String query = mainProductSearchField.getText();
+        ObservableList<Product> idList;
+        if(query.matches("[0-9]*") && query.length() != 0) {
+            idList = searchProductById(query);
+            if(idList.size() == 0) {
+                updateProductsTable();
+            } else {
+                productTableView.setItems(idList);
+            }
+        } else {
+            ObservableList<Product> tmpList = searchProductByName(query);
+            if(tmpList.size() == 0) {
+                updateProductsTable();
+            } else {
+                productTableView.setItems(tmpList);
+            }
+        }
+    }
 }

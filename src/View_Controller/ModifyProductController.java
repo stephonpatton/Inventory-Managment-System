@@ -55,9 +55,6 @@ public class ModifyProductController implements Initializable {
 
     int indexOfProduct = productIndexToModify();
 
-    //TODO: Implemented modify product (bring data from selected product)
-    //TODO: Add more associated parts
-
     public void cancelModifyProduct(ActionEvent actionEvent)  {
         Parent root;
         try {
@@ -151,6 +148,7 @@ public class ModifyProductController implements Initializable {
     private boolean checkDifferences() {
         if(checkProductNameDiff() && checkProductInvDiff() && checkProductPriceDiff() && checkProductMax()
         && checkProductMinDiff()) {
+            System.out.println("No differences");
             return true;
         } else {
             createProduct();
@@ -158,24 +156,9 @@ public class ModifyProductController implements Initializable {
         }
     }
 
-    //TODO: Figure out errors for product
     public boolean checkProductMinDiff() {
-//        int productMin = 0;
-//        try {
-//            productMin = Integer.parseInt(modifyProductMinTF.getText());
-//        }catch(NumberFormatException e) {
-//            System.err.println("Please enter a number for min");
-//        }
-//
-//
-//        if(modifyProductMinTF.getText().matches("[0-9]*") && modifyProductMinTF.getLength() != 0) {
-//            return productMin == Inventory.getAllProducts().get(indexOfProduct).getMin();
-//        } else {
-//            System.out.println("Please provide a number for min");
-//            return false;
-//        }
         if(modifyProductMinTF.getText().matches("[0-9]*") && modifyProductMinTF.getLength() != 0) {
-            return true;
+            return Integer.parseInt(modifyProductMinTF.getText()) == productToModify().getMin();
         } else {
             System.out.println("ENTER SOMETHING");
             return false;
@@ -215,4 +198,6 @@ public class ModifyProductController implements Initializable {
         Inventory.updateProduct(productIndexToModify(), newProduct);
         System.out.println("Product updated successfully");
     }
+
+    //TODO: Add search part functionality
 }
