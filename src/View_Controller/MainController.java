@@ -247,15 +247,24 @@ public class MainController extends Application implements Initializable {
     public void getSelectedPart(ActionEvent event) {
         try {
             //Getting the part that needs to be modified
-            tempPart = partsTableView.getSelectionModel().getSelectedItem();
-            //Setting the index
-            tempPartIndex = getAllParts().indexOf(tempPart);
-            //Setting the scene
-            Parent partsModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyPart.fxml")));
-            Scene scene = new Scene(partsModify);
-            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            window.setScene(scene);
-            window.show();
+            if(partsTableView.getSelectionModel().getSelectedItem() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Please select a part to modify");
+                alert.setContentText("A part must be selected in order to modify");
+                alert.showAndWait().ifPresent(response -> {
+
+                });
+            } else {
+                tempPart = partsTableView.getSelectionModel().getSelectedItem();
+                //Setting the index
+                tempPartIndex = getAllParts().indexOf(tempPart);
+                //Setting the scene
+                Parent partsModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyPart.fxml")));
+                Scene scene = new Scene(partsModify);
+                Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                window.setScene(scene);
+                window.show();
+            }
         } catch(Exception e) {
             System.err.println("\nPlease select a part to modify");
         }
@@ -268,15 +277,24 @@ public class MainController extends Application implements Initializable {
     public void getSelectedProduct(ActionEvent event) {
         try {
             //Getting the product that needs to be modified
-            tempProduct = productTableView.getSelectionModel().getSelectedItem();
-            //Setting the modify index
-            tempProductIndex = getAllProducts().indexOf(tempProduct);
-            //Setting the scene
-            Parent productModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyProduct.fxml")));
-            Scene scene = new Scene(productModify);
-            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            window.setScene(scene);
-            window.show();
+            if(productTableView.getSelectionModel().getSelectedItem() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Please select product to modify");
+                alert.setContentText("A product must be selected in order to modify");
+                alert.showAndWait().ifPresent(response -> {
+
+                });
+            } else {
+                tempProduct = productTableView.getSelectionModel().getSelectedItem();
+                //Setting the modify index
+                tempProductIndex = getAllProducts().indexOf(tempProduct);
+                //Setting the scene
+                Parent productModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyProduct.fxml")));
+                Scene scene = new Scene(productModify);
+                Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                window.setScene(scene);
+                window.show();
+            }
         } catch(Exception e) {
             System.err.println("\nPlease select a product to modify");
         }
@@ -321,25 +339,34 @@ public class MainController extends Application implements Initializable {
      */
     public void deletePartFromTable() {
         //Gets the part from the table
-        tempPart = partsTableView.getSelectionModel().getSelectedItem();
-        //Buttons for alert window
-        ButtonType deleteButton = new ButtonType("Delete");
-        ButtonType cancelButton = new ButtonType("Cancel");
-        //Creating alert windows
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to remove the part?", deleteButton, cancelButton);
-        //Handling alert window response
-        alert.showAndWait().ifPresent(response -> {
-            if(response == deleteButton) {
-                tempPartIndex = getAllParts().indexOf(tempPart);
-                if(deletePart(tempPart)) {
-                    System.out.println("Successfully deleted");
-                } else {
-                    System.out.println("Was not deleted");
+        if(partsTableView.getSelectionModel().getSelectedItem() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Please select a part to delete");
+            alert.setContentText("A part must be selected in order to delete");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        } else {
+            tempPart = partsTableView.getSelectionModel().getSelectedItem();
+            //Buttons for alert window
+            ButtonType deleteButton = new ButtonType("Delete");
+            ButtonType cancelButton = new ButtonType("Cancel");
+            //Creating alert windows
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to remove the part?", deleteButton, cancelButton);
+            //Handling alert window response
+            alert.showAndWait().ifPresent(response -> {
+                if (response == deleteButton) {
+                    tempPartIndex = getAllParts().indexOf(tempPart);
+                    if (deletePart(tempPart)) {
+                        System.out.println("Successfully deleted");
+                    } else {
+                        System.out.println("Was not deleted");
+                    }
+                } else if (response == cancelButton) {
+                    alert.close();
                 }
-            } else if(response == cancelButton) {
-                alert.close();
-            }
-        });
+            });
+        }
     }
 
     /**
@@ -347,23 +374,31 @@ public class MainController extends Application implements Initializable {
      */
     public void deleteProductFromTable() {
         //Gets product from table
-        tempProduct = productTableView.getSelectionModel().getSelectedItem();
-        //Checks to see if product has associated parts
-        if(tempProduct.getAssociatedParts().size() != 0) {
-            ButtonType okayButton = new ButtonType("Okay");
-            Alert deleteParts = new Alert(Alert.AlertType.ERROR, "Please delete associated parts first", okayButton);
-            deleteParts.setHeaderText("This product has parts associated with it");
-            deleteParts.show();
+        if(productTableView.getSelectionModel().getSelectedItem() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Please select a product to delete from the inventory");
+            alert.setContentText("A product must be selected in order to delete from inventory");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
         } else {
-            //Deletes product is no associated parts
-            tempProductIndex = getAllProducts().indexOf(tempProduct);
-            if(deleteProduct(tempProduct)) {
-                System.out.println("Successfully deleted product");
+            tempProduct = productTableView.getSelectionModel().getSelectedItem();
+            //Checks to see if product has associated parts
+            if (tempProduct.getAssociatedParts().size() != 0) {
+                ButtonType okayButton = new ButtonType("Okay");
+                Alert deleteParts = new Alert(Alert.AlertType.ERROR, "Please delete associated parts first", okayButton);
+                deleteParts.setHeaderText("This product has parts associated with it");
+                deleteParts.show();
             } else {
-                System.out.println("Was not deleted");
+                //Deletes product is no associated parts
+                tempProductIndex = getAllProducts().indexOf(tempProduct);
+                if (deleteProduct(tempProduct)) {
+                    System.out.println("Successfully deleted product");
+                } else {
+                    System.out.println("Was not deleted");
+                }
             }
         }
-
     }
 
     /**

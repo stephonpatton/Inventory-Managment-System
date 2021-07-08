@@ -444,10 +444,18 @@ public class ModifyProductController implements Initializable {
         return isTheSame;
     }
 
+    /**
+     * Checks product name fields and inventory for differences
+     * @return True if no differences
+     */
     private boolean checkProductNameDiff() {
         return modifyProductNameTF.getText().equals(Inventory.getAllProducts().get(productIndexToModify()).getName());
     }
 
+    /**
+     * Tries to create new product with given data after checking fields
+     * @return True if product was created and added to inventory successfully
+     */
     public boolean createProduct() {
         boolean created = false;
         if(checkProductNameDiff() && checkProductInvDiff() && checkProductPriceDiff() && checkProductMax()
@@ -479,9 +487,9 @@ public class ModifyProductController implements Initializable {
     }
 
     /**
-     *
-     * @param query
-     * @return
+     * Searches part inventory for an ID given by user in search box
+     * @param query Given by user
+     * @return List of parts that match query
      */
     public ObservableList<Part> searchPartById(String query) {
         ObservableList<Part> searchPart = FXCollections.observableArrayList();
@@ -497,9 +505,9 @@ public class ModifyProductController implements Initializable {
     }
 
     /**
-     *
-     * @param query
-     * @return
+     * Searches part inventory for a part name given by user in search box
+     * @param query Given by user
+     * @return List of parts that match query
      */
     public ObservableList<Part> searchPartByName(String query) {
         ObservableList<Part> searchPart = FXCollections.observableArrayList();
@@ -515,7 +523,7 @@ public class ModifyProductController implements Initializable {
     }
 
     /**
-     *
+     * Main method to search for part. Combines ID and name search together and sets TableView to results
      */
     public void searchPart() {
         String query = modifyProductPartTF.getText();
@@ -537,6 +545,9 @@ public class ModifyProductController implements Initializable {
         }
     }
 
+    /**
+     * Updates the parts table with current inventory of parts
+     */
     public void updatePartsTable() {
         availablePartTableView.setItems(Inventory.getAllParts());
     }
