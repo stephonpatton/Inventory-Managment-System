@@ -45,7 +45,6 @@ public class Inventory {
         return null;
     }
 
-    //TODO: Maybe use for search? If not then implement search function for part and product
     public static Product lookupProduct(int productId) {
         for(Product allProduct : allProducts) {
             if(allProduct.getId() == productId) {

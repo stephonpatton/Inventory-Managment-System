@@ -1,9 +1,10 @@
 package View_Controller;
 
 import Model.*;
+import static Model.Inventory.*;
+
 import javafx.application.Application;
 import javafx.application.Platform;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,45 +14,55 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static Model.Inventory.*;
-
-
 
 public class MainController extends Application implements Initializable {
+    //Table of products
     @FXML private TableView<Product> productTableView;
+    //Product id column
     @FXML private  TableColumn<Product,Integer> productIdCol;
+    //Product name column
     @FXML private  TableColumn<Product,String> productNameCol;
+    //Product inventory column
     @FXML private  TableColumn<Product,Integer> productInvCol;
+    //Product price column
     @FXML private  TableColumn<Product,Double> productPriceCol;
+    //Table of parts
     @FXML private TableView<Part> partsTableView;
+    //Part id column
     @FXML private TableColumn<Part, Integer> partIdCol;
+    //Part name column
     @FXML private TableColumn<Part, String> partNameCol;
+    //Part inventory column
     @FXML private TableColumn<Part, Integer> partInvCol;
+    //Part price column
     @FXML private TableColumn<Part, Double> partPriceCol;
 
+    //Search text field for part (main screen)
     @FXML private TextField mainPartSearchField;
+    //Search text field for product (main screen)
     @FXML private TextField mainProductSearchField;
 
+    //Temporary variable to find out what part to modify
     private static Part tempPart;
+    //Temporary variable to find out what part index is being modified
     private static int tempPartIndex;
 
+    //Temporary variable to find out what product to modify
     private static Product tempProduct;
+    //Temporary variable to find out what product index is being modified
     private static int tempProductIndex;
 
     /**
-     * Starts application and loads up main page (fxml)
+     * Starts application and loads up main screen (mainform.fxml)
      * @param primaryStage
      * @throws Exception
      */
@@ -81,19 +92,18 @@ public class MainController extends Application implements Initializable {
 
         Part windows = new OutsourcedPart(4, "Windows", 529, 3, 1, 50, "Glass R US");
         Part wipers = new OutsourcedPart(5, "Wipers", 9.99, 52, 1, 760, "Wipers R US");
+        //End of sample data creation
 
-        //Adding Products to inventory
+        //Adding sample products to inventory
         Inventory.addProduct(bike);
         Inventory.addProduct(motorcycle);
 
-        //Adding parts to inventory
+        //Adding sample parts to inventory
         Inventory.addPart(axle);
         Inventory.addPart(tires);
         Inventory.addPart(brakes);
         Inventory.addPart(windows);
         Inventory.addPart(wipers);
-//
-//        Inventory.updateProduct(1,new Product(getProductIDCount(), "FUCK ME", 3, 2, 0, 10));
 
         launch(args);
     }
@@ -106,17 +116,20 @@ public class MainController extends Application implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
+            //Load in product table
             updateProductsTable();
+            //Load in part table
             updatePartsTable();
         } catch(NullPointerException e) {
-
             e.printStackTrace();
         }
+        //Setting product columns to cell factory to get data from application
         productIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         productNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         productInvCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         productPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
 
+        //Setting part columns to cell factory to get data from application
         partIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         partInvCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
@@ -130,13 +143,15 @@ public class MainController extends Application implements Initializable {
     public void openAddPartWindow(ActionEvent actionEvent) {
         Parent root;
         try {
+            //Setting scene to AddPart window and setting properties for it
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/AddPart.fxml")));
             Stage stage = new Stage();
             stage.setTitle("Add Part");
             stage.setScene(new Scene(root, 600, 400));
             stage.setResizable(false);
             stage.show();
-            // Hide this current window (if this is what you want)
+
+            //Hides current window
             ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
         }
         catch (IOException e) {
@@ -181,16 +196,22 @@ public class MainController extends Application implements Initializable {
     }
 
 
+    /**
+     * Opens the add product window upon a click
+     * @param actionEvent button being pressed
+     */
     public void openAddProductWindow(ActionEvent actionEvent) {
         Parent root;
         try {
+            //Setting new scene and adding properties to scene
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/AddProduct.fxml")));
             Stage stage = new Stage();
             stage.setTitle("Add Product");
             stage.setScene(new Scene(root, 920, 500));
             stage.setResizable(false);
             stage.show();
-            // Hide this current window (if this is what you want)
+
+//            Hides current window after scene has been set
             ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
         }
         catch (IOException e) {
@@ -206,14 +227,14 @@ public class MainController extends Application implements Initializable {
     }
 
     /**
-     * Updates the parts table (useful for changes in table)
+     * Updates the parts table based on inventory
      */
     public void updatePartsTable() {
         partsTableView.setItems(Inventory.getAllParts());
     }
 
     /**
-     * Updates the products table (useful for changes in table)
+     * Updates the products table based on inventory
      */
     public void updateProductsTable() {
         productTableView.setItems(Inventory.getAllProducts());
@@ -225,8 +246,11 @@ public class MainController extends Application implements Initializable {
      */
     public void getSelectedPart(ActionEvent event) {
         try {
+            //Getting the part that needs to be modified
             tempPart = partsTableView.getSelectionModel().getSelectedItem();
+            //Setting the index
             tempPartIndex = getAllParts().indexOf(tempPart);
+            //Setting the scene
             Parent partsModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyPart.fxml")));
             Scene scene = new Scene(partsModify);
             Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -237,10 +261,17 @@ public class MainController extends Application implements Initializable {
         }
     }
 
-    public void getSelectedProduct(ActionEvent event) throws IOException {
+    /**
+     * Gets the selected product object in a row in the products table to modify
+     * @param event when modify button is pressed for product
+     */
+    public void getSelectedProduct(ActionEvent event) {
         try {
+            //Getting the product that needs to be modified
             tempProduct = productTableView.getSelectionModel().getSelectedItem();
+            //Setting the modify index
             tempProductIndex = getAllProducts().indexOf(tempProduct);
+            //Setting the scene
             Parent productModify = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ModifyProduct.fxml")));
             Scene scene = new Scene(productModify);
             Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -251,21 +282,33 @@ public class MainController extends Application implements Initializable {
         }
     }
 
+    /**
+     * Gets the part that is currently being modified
+     * @return Part being modified
+     */
     public static Part partToModify() {
         return tempPart;
     }
 
+    /**
+     * Gets the product that is currently being modified
+     * @return Product being modified
+     */
     public static Product productToModify() {
         return tempProduct;
     }
 
+    /**
+     * Gets the index of the product being modified
+     * @return Index of product being modified
+     */
     public static int productIndexToModify() {
         return tempProductIndex;
     }
 
     /**
      * Gets the index of the part to modify
-     * @return index of part to modify
+     * @return Index of part to modify
      */
     public static int partIndexToModify() {
         return tempPartIndex;
@@ -277,61 +320,103 @@ public class MainController extends Application implements Initializable {
      * Deletes a part from the table after the delete button is pressed
      */
     public void deletePartFromTable() {
+        //Gets the part from the table
         tempPart = partsTableView.getSelectionModel().getSelectedItem();
-        tempPartIndex = getAllParts().indexOf(tempPart);
-        if(deletePart(tempPart)) {
-            //if you want to make auto gen id 1 less than before because of deletion
-//            setPartCount(getPartIDCount() - 1);
-            System.out.println("Successfully deleted");
-        } else {
-            System.out.println("Was not deleted");
-        }
+        //Buttons for alert window
+        ButtonType deleteButton = new ButtonType("Delete");
+        ButtonType cancelButton = new ButtonType("Cancel");
+        //Creating alert windows
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to remove the part?", deleteButton, cancelButton);
+        //Handling alert window response
+        alert.showAndWait().ifPresent(response -> {
+            if(response == deleteButton) {
+                tempPartIndex = getAllParts().indexOf(tempPart);
+                if(deletePart(tempPart)) {
+                    System.out.println("Successfully deleted");
+                } else {
+                    System.out.println("Was not deleted");
+                }
+            } else if(response == cancelButton) {
+                alert.close();
+            }
+        });
     }
-
-    //TODO: Confirmation dialog for deletion
 
     /**
      * Deletes a product from the table after the delete button is pressed
      */
     public void deleteProductFromTable() {
+        //Gets product from table
         tempProduct = productTableView.getSelectionModel().getSelectedItem();
-        tempProductIndex = getAllProducts().indexOf(tempProduct);
-        if(deleteProduct(tempProduct)) {
-            System.out.println("Successfully deleted product");
+        //Checks to see if product has associated parts
+        if(tempProduct.getAssociatedParts().size() != 0) {
+            ButtonType okayButton = new ButtonType("Okay");
+            Alert deleteParts = new Alert(Alert.AlertType.ERROR, "Please delete associated parts first", okayButton);
+            deleteParts.setHeaderText("This product has parts associated with it");
+            deleteParts.show();
         } else {
-            System.out.println("Was not deleted");
+            //Deletes product is no associated parts
+            tempProductIndex = getAllProducts().indexOf(tempProduct);
+            if(deleteProduct(tempProduct)) {
+                System.out.println("Successfully deleted product");
+            } else {
+                System.out.println("Was not deleted");
+            }
         }
+
     }
 
+    /**
+     * Searches part by ID based on a query search from user
+     * @param query given by user
+     * @return List of Parts that match query
+     */
     public ObservableList<Part> searchPartById(String query) {
+        //Creates temporary list for results
         ObservableList<Part> searchPart = FXCollections.observableArrayList();
+        //Checks to see if query matches any id in the inventory
         for(Part part : Inventory.getAllParts()) {
             if((part.getId() == Integer.parseInt(query))) {
                 searchPart.add(part);
             }
         }
+        //Checks if there is no match
         if(searchPart.size() == 0 ) {
             System.out.println("No ID matches for part");
         }
         return searchPart;
     }
 
+    /**
+     * Searches parts by name based on a query search from user
+     * @param query given by user
+     * @return List of Parts that match query
+     */
     public ObservableList<Part> searchPartByName(String query) {
+        //Creates temporary list for results
         ObservableList<Part> searchPart = FXCollections.observableArrayList();
+        //Checks to see if query matches any name (or partial name) in inventory
         for(Part part : Inventory.getAllParts()) {
             if(part.getName().toLowerCase().contains(query.toLowerCase())) {
                 searchPart.add(part);
             }
         }
+        //Checks if there is no match
         if(searchPart.size() == 0 ) {
             System.out.println("No results for part name");
         }
         return searchPart;
     }
 
+    /**
+     * Searches part with query using searchById and searchByName after enter is pressed
+     */
     public void searchPart() {
+        //Gets query to process
         String query = mainPartSearchField.getText();
+        //Result list
         ObservableList<Part> idList;
+        //Checks if query is number
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchPartById(query);
             if(idList.size() == 0) {
@@ -340,6 +425,7 @@ public class MainController extends Application implements Initializable {
                 partsTableView.setItems(idList);
             }
         } else {
+            //checks if query is string (for name)
             ObservableList<Part> tmpList = searchPartByName(query);
             if(tmpList.size() == 0) {
                 updatePartsTable();
@@ -349,37 +435,54 @@ public class MainController extends Application implements Initializable {
         }
     }
 
+    /**
+     * Searches inventory for products based on ID query
+     * @param query given by user
+     * @return List of Product results
+     */
     public ObservableList<Product> searchProductById(String query) {
+        //Temporary list of results
         ObservableList<Product> idList = FXCollections.observableArrayList();
 
+        //Checks if there is a product id match
         for(Product product : Inventory.getAllProducts()) {
             if((product.getId() == Integer.parseInt(query))) {
                 idList.add(product);
             }
         }
+        //Checks if there was no matches
         if(idList.size() == 0 ) {
+            //TODO: Display alert box
             System.out.println("No ID matches for product");
         }
-
         return idList;
     }
 
     public ObservableList<Product> searchProductByName(String query) {
+        //Temporary list of results
         ObservableList<Product> searchProduct = FXCollections.observableArrayList();
+        //Checks if there is a product name (or partial name) match
         for(Product product : Inventory.getAllProducts()) {
             if(product.getName().toLowerCase().contains(query.toLowerCase())) {
                 searchProduct.add(product);
             }
         }
+        //Checks if there are no results
         if(searchProduct.size() == 0) {
             System.out.println("No results for product name");
         }
         return searchProduct;
     }
 
+    /**
+     * Searches products in inventory after enter is pressed. Combines searchByID and searchByName
+     */
     public void searchProduct() {
+        //Gets query for search field
         String query = mainProductSearchField.getText();
+        //Creates temporary list for results
         ObservableList<Product> idList;
+        //Checks if query is a number
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchProductById(query);
             if(idList.size() == 0) {
@@ -388,7 +491,9 @@ public class MainController extends Application implements Initializable {
                 productTableView.setItems(idList);
             }
         } else {
+            //Creates temporary list
             ObservableList<Product> tmpList = searchProductByName(query);
+            //Checks if results were not found
             if(tmpList.size() == 0) {
                 updateProductsTable();
             } else {

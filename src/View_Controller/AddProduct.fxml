@@ -20,7 +20,7 @@
                 <TextField fx:id="addProductMax" layoutX="81.0" layoutY="216.0" />
                 <TextField fx:id="addProductMin" layoutX="288.0" layoutY="216.0" />
                 <Label layoutX="253.0" layoutY="220.0" text="Min" />
-                <TextField layoutX="725.0" layoutY="12.0" prefHeight="25.0" prefWidth="161.0" promptText="Search by Part ID or Name" />
+                <TextField fx:id="addProductPartsTF" layoutX="725.0" layoutY="12.0" onAction="#searchPart" prefHeight="25.0" prefWidth="161.0" promptText="Search by Part ID or Name" />
                 <TableView fx:id="availablePartTableView" layoutX="483.0" layoutY="47.0" prefHeight="140.0" prefWidth="405.0">
                     <columns>
                         <TableColumn fx:id="availablePartsPartIdCol" prefWidth="86.0" resizable="false" text="Part ID" />
