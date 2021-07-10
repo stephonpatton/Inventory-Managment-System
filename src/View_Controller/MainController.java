@@ -443,6 +443,15 @@ public class MainController extends Application implements Initializable {
         return searchPart;
     }
 
+    private void noResultAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait().ifPresent(response -> {
+
+        });
+    }
+
     /**
      * Searches part with query using searchById and searchByName after enter is pressed
      */
@@ -455,6 +464,7 @@ public class MainController extends Application implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchPartById(query);
             if(idList.size() == 0) {
+                noResultAlert("No results found for part", "No results were found for this search");
                 updatePartsTable();
             } else {
                 partsTableView.setItems(idList);
@@ -463,6 +473,7 @@ public class MainController extends Application implements Initializable {
             //checks if query is string (for name)
             ObservableList<Part> tmpList = searchPartByName(query);
             if(tmpList.size() == 0) {
+                noResultAlert("No results found for part", "No results were found for this search");
                 updatePartsTable();
             } else {
                 partsTableView.setItems(tmpList);
@@ -487,7 +498,6 @@ public class MainController extends Application implements Initializable {
         }
         //Checks if there was no matches
         if(idList.size() == 0 ) {
-            //TODO: Display alert box
             System.out.println("No ID matches for product");
         }
         return idList;
@@ -521,6 +531,7 @@ public class MainController extends Application implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchProductById(query);
             if(idList.size() == 0) {
+                noResultAlert("No results found for product", "No results were found for this search");
                 updateProductsTable();
             } else {
                 productTableView.setItems(idList);
@@ -530,6 +541,7 @@ public class MainController extends Application implements Initializable {
             ObservableList<Product> tmpList = searchProductByName(query);
             //Checks if results were not found
             if(tmpList.size() == 0) {
+                noResultAlert("No results found for product", "No results were found for this search");
                 updateProductsTable();
             } else {
                 productTableView.setItems(tmpList);

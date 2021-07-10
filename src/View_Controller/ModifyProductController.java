@@ -255,8 +255,6 @@ public class ModifyProductController implements Initializable {
         }
     }
 
-    //TODO: Dont let modify button happen without selection
-
     /**
      * Changes the color of the text fields that has invalid data
      */
@@ -308,7 +306,6 @@ public class ModifyProductController implements Initializable {
             System.err.println("Please provide a number for price");
             priceCheck = false;
         }
-
     }
 
     /**
@@ -357,7 +354,6 @@ public class ModifyProductController implements Initializable {
             maxCheck = false;
             System.err.println("Please provide a number for max");
         }
-
     }
 
     /**
@@ -376,7 +372,6 @@ public class ModifyProductController implements Initializable {
         }catch(Exception e) {
             System.err.println("Please provide a number for min");
             minCheck = false;
-            System.out.println("minCheck changed to " + minCheck);
         }
         System.out.println("value of minCheck " + minCheck);
 
@@ -486,6 +481,15 @@ public class ModifyProductController implements Initializable {
         return created;
     }
 
+    private void noResultAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait().ifPresent(response -> {
+
+        });
+    }
+
     /**
      * Searches part inventory for an ID given by user in search box
      * @param query Given by user
@@ -531,6 +535,7 @@ public class ModifyProductController implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchPartById(query);
             if(idList.size() == 0) {
+                noResultAlert("No results found for part", "No results were found for this search");
                 updatePartsTable();
             } else {
                 availablePartTableView.setItems(idList);
@@ -538,6 +543,7 @@ public class ModifyProductController implements Initializable {
         } else {
             ObservableList<Part> tmpList = searchPartByName(query);
             if(tmpList.size() == 0) {
+                noResultAlert("No results found for part", "No results were found for this search");
                 updatePartsTable();
             } else {
                 availablePartTableView.setItems(tmpList);
@@ -551,4 +557,6 @@ public class ModifyProductController implements Initializable {
     public void updatePartsTable() {
         availablePartTableView.setItems(Inventory.getAllParts());
     }
+
+    //TODO: Error boxes maybe?
 }

@@ -68,6 +68,14 @@ public class AddProductController implements Initializable {
     //Temporary list for part adding feature
     ObservableList<Part> tempList = FXCollections.observableArrayList();
 
+    //Boolean variables to check if fields have valid data
+    private boolean minCheck;
+    private boolean maxCheck;
+    private boolean priceCheck;
+    private boolean invCheck;
+    private boolean nameCheck;
+
+
     /**
      * Returns to the main screen once exit button is pressed on the Add Product screen
      * @param actionEvent Exit button pressed
@@ -94,20 +102,48 @@ public class AddProductController implements Initializable {
      * Creates and adds the product after all of the validation checks have been performed
      * @return The new product that was created
      */
-    public Product createProduct() {
-        //Create product object that is being added to inventory
-        Product newProduct;
-        //Setting attributes based on information from user
-        String productName = addProductName.getText();
-        int productStock = Integer.parseInt(addProductInv.getText());
-        double productPrice = Double.parseDouble(addProductPrice.getText());
-        int productMin = Integer.parseInt(addProductMin.getText());
-        int productMax = Integer.parseInt(addProductMax.getText());
-        newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
-        //Adding to inventory
-        Inventory.addProduct(newProduct);
-        return newProduct;
+    public boolean createProduct() {
+        boolean created = false;
+        if (checkAddProductName() && checkAddProductInv() && checkAddProductPrice() && checkAddProductMax() && checkAddProductMin()) {
+            System.out.println("No differences");
+        } else {
+            presentErrors();
+            //Create product object that is being added to inventory
+            Product newProduct;
+            //Setting attributes based on information from user
+            String productName = addProductName.getText();
+            try {
+                int productStock = Integer.parseInt(addProductInv.getText());
+                double productPrice = Double.parseDouble(addProductPrice.getText());
+                int productMin = Integer.parseInt(addProductMin.getText());
+                int productMax = Integer.parseInt(addProductMax.getText());
+                newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+                //Adding to inventory
+                Inventory.addProduct(newProduct);
+                created = true;
+                setAllChecksToFalse();
+            } catch (Exception e) {
+                presentErrors();
+                System.err.println("Please provide numbers only");
+            }
+        }
+        return created;
+
     }
+//        //Create product object that is being added to inventory
+//        Product newProduct;
+//        //Setting attributes based on information from user
+//        String productName = addProductName.getText();
+//        int productStock = Integer.parseInt(addProductInv.getText());
+//        double productPrice = Double.parseDouble(addProductPrice.getText());
+//        int productMin = Integer.parseInt(addProductMin.getText());
+//        int productMax = Integer.parseInt(addProductMax.getText());
+//        newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+//        //Adding to inventory
+//        Inventory.addProduct(newProduct);
+//        return newProduct;
+
+
 
     /**
      * Checks if product price has data and if the data is valid (numbers only)
@@ -175,6 +211,11 @@ public class AddProductController implements Initializable {
         }
     }
 
+    private boolean areFieldsValid() {
+        return checkAddProductMin() && checkAddProductMax() && checkAddProductPrice() && checkAddProductInv()
+                && checkAddProductName();
+    }
+
     /**
      * The initial method that is called when the screen is loaded. Populates table and auto gens ID
      * @param url Required
@@ -211,15 +252,18 @@ public class AddProductController implements Initializable {
      * @param actionEvent Save button pressed
      */
     public void addProductSubmit(ActionEvent actionEvent) {
-        //Checks if all data fields have valid data
-        if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
-                && checkAddProductMax() && checkAddProductMin()) {
-            //Creates product and adds associated parts to it
-            Product product = createProduct();
-            addAllPartsToProduct(tempList,product);
-            cancelAddProduct(actionEvent);
+        if(!areFieldsValid()) {
+            checkAllFields();
+            presentErrors();
+        } else {
+            if(createProduct()) {
+                cancelAddProduct(actionEvent);
+            } else {
+                setAllChecksToFalse();
+            }
         }
     }
+
 
     /**
      * Adds all parts from associated table to the product
@@ -346,4 +390,116 @@ public class AddProductController implements Initializable {
      */
     public void updatePartsTable() {
         availablePartTableView.setItems(Inventory.getAllParts());
-    }}
+    }
+
+    /**
+     * Checks all text fields to see which fields contain errors
+     */
+    private void checkAllFields() {
+        checkPriceField();
+        checkInvField();
+        checkMaxField();
+        checkMinField();
+    }
+
+    private void checkMinField() {
+        String input = addProductMin.getText();
+        int tryInt;
+        try {
+            tryInt = Integer.parseInt(input.trim());
+            minCheck = true;
+            System.out.println("minCheck changed to " + minCheck);
+        }catch(Exception e) {
+            System.err.println("Please provide a number for min");
+            minCheck = false;
+            System.out.println("minCheck changed to " + minCheck);
+        }
+        System.out.println("value of minCheck " + minCheck);
+    }
+
+    private void checkMaxField() {
+        String input = addProductMax.getText();
+        int tryInt = 0;
+        try {
+            tryInt = Integer.parseInt(input.trim());
+            maxCheck = true;
+        }catch(Exception e) {
+            maxCheck = false;
+            System.err.println("Please provide a number for max");
+        }
+    }
+
+    private void checkInvField() {
+        String input = addProductInv.getText();
+        int tryInt = 0;
+        try {
+            tryInt = Integer.parseInt(input.trim());
+            invCheck = true;
+        }catch (Exception e) {
+            System.err.println("Please provide a number for inventory");
+            invCheck = false;
+        }
+    }
+
+    private void checkPriceField() {
+        String input = addProductPrice.getText();
+        double tryDouble = 0;
+        try {
+            tryDouble = Double.parseDouble(input.trim());
+            priceCheck = true;
+        }catch(Exception e) {
+            System.err.println("Please provide a number for price");
+            priceCheck = false;
+        }
+    }
+
+    private void noResultAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait().ifPresent(response -> {
+
+        });
+    }
+
+    /**
+     * Changes the color of the text fields that has invalid data
+     */
+    public void presentErrors() {
+        if(!maxCheck) {
+            addProductMax.setStyle("-fx-border-color: #ae0700");
+        } else {
+            addProductMax.setStyle("-fx-border-color: #9f07");
+        }
+
+        if(!minCheck) {
+            addProductMin.setStyle("-fx-border-color: #ae0700");
+        } else {
+            addProductMin.setStyle("-fx-border-color: #9f07");
+        }
+        if(!invCheck) {
+            addProductInv.setStyle("-fx-border-color: #ae0700");
+        } else {
+            addProductInv.setStyle("-fx-border-color: #9f07");
+        }
+
+        if(!priceCheck) {
+            addProductPrice.setStyle("-fx-border-color: #ae0700");
+        } else {
+            addProductPrice.setStyle("-fx-border-color: #9f07");
+        }
+    }
+
+    /**
+     * Resets all error checks to false after error checking has happened (to restart process for next click)
+     */
+    private void setAllChecksToFalse() {
+        maxCheck = false;
+        minCheck = false;
+        priceCheck = false;
+        invCheck = false;
+    }
+
+    //TODO: Highlight fields with invalid data
+    //TODO: Alert boxes as needed (when product fails to create)
+}
