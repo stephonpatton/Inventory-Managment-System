@@ -104,9 +104,6 @@ public class AddProductController implements Initializable {
      */
     public boolean createProduct() {
         boolean created = false;
-        if (checkAddProductName() && checkAddProductInv() && checkAddProductPrice() && checkAddProductMax() && checkAddProductMin()) {
-            System.out.println("No differences");
-        } else {
             presentErrors();
             //Create product object that is being added to inventory
             Product newProduct;
@@ -118,6 +115,7 @@ public class AddProductController implements Initializable {
                 int productMin = Integer.parseInt(addProductMin.getText());
                 int productMax = Integer.parseInt(addProductMax.getText());
                 newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+                addAllPartsToProduct(tempList, newProduct);
                 //Adding to inventory
                 Inventory.addProduct(newProduct);
                 created = true;
@@ -126,7 +124,6 @@ public class AddProductController implements Initializable {
                 presentErrors();
                 System.err.println("Please provide numbers only");
             }
-        }
         return created;
 
     }
@@ -252,15 +249,36 @@ public class AddProductController implements Initializable {
      * @param actionEvent Save button pressed
      */
     public void addProductSubmit(ActionEvent actionEvent) {
-        if(!areFieldsValid()) {
-            checkAllFields();
-            presentErrors();
-        } else {
+//        //Checks if all data fields have valid data
+//        if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
+//                && checkAddProductMax() && checkAddProductMin()) {
+//            //Creates product and adds associated parts to it
+//            Product product = createProduct();
+//            addAllPartsToProduct(tempList,product);
+//            cancelAddProduct(actionEvent);
+//        }
+//        if(!areFieldsValid()) {
+//            checkAllFields();
+//            presentErrors();
+//        } else {
+//            if(createProduct()) {
+//                cancelAddProduct(actionEvent);
+//            } else {
+//                setAllChecksToFalse();
+//            }
+//        }
+
+        if(areFieldsValid()) {
+
             if(createProduct()) {
                 cancelAddProduct(actionEvent);
             } else {
                 setAllChecksToFalse();
             }
+        } else {
+            checkAllFields();
+            presentErrors();
+            System.out.println("Please enter valid data");
         }
     }
 
