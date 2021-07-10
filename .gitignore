@@ -1,2 +1,4 @@
 # Project exclude paths
 /out/
+/.idea/
+/wgu-software1project.iml
