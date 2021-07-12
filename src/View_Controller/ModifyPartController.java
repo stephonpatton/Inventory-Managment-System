@@ -97,8 +97,8 @@ public class ModifyPartController implements Initializable {
     public boolean createPart() {
         boolean created = false;
         //Gets input data
-        String partName = modifyPartNameTF.getText();
         try {
+            String partName = modifyPartNameTF.getText();
             double partPrice = Double.parseDouble(modifyPartPriceTF.getText());
             int partStock = Integer.parseInt(modifyPartInvTF.getText());
             int partMax = Integer.parseInt(modifyPartMaxTF.getText());
@@ -244,7 +244,20 @@ public class ModifyPartController implements Initializable {
      * @return True if no differences
      */
     public boolean checkPartNameDiff() {
-        return modifyPartNameTF.getText().equals(Inventory.getAllParts().get(partIndexToModify()).getName());
+        String input = modifyPartNameTF.getText();
+        boolean isTheSame;
+        if(input.equals(partToModify().getName())) {
+            isTheSame = true;
+            nameCheck = true;
+        } else if(input.matches("[0-9]*") || input.length() == 0){
+            nameCheck = false;
+            isTheSame = false;
+        } else {
+            nameCheck = true;
+            isTheSame = false;
+        }
+        return isTheSame;
+//        return modifyPartNameTF.getText().equals(Inventory.getAllParts().get(partIndexToModify()).getName());
     }
 
     /**
@@ -335,6 +348,7 @@ public class ModifyPartController implements Initializable {
         invCheck = false;
         machineIdCheck = false;
         companyNameCheck = false;
+        nameCheck = true;
     }
 
     private void checkAllFields() {
@@ -343,10 +357,19 @@ public class ModifyPartController implements Initializable {
         checkMaxField();
         checkMinFields();
         checkMachineIdFields();
+        checkNameField();
     }
 
-    private void checkCompanyNameFields() {
+    private void checkNameField() {
+        String input = modifyPartNameTF.getText();
+        if(input.matches("[0-9]*") || input.length() == 0){
+            nameCheck = false;
+        } else {
+            nameCheck = true;
+        }
     }
+
+    //TODO: Fix name field
 
     private void checkMinFields() {
         String input = modifyPartMinTF.getText();
@@ -419,10 +442,14 @@ public class ModifyPartController implements Initializable {
                 companyNameCheck = true;
             }
         }
-
     }
 
     public void presentErrors() {
+        if(!nameCheck) {
+            modifyPartNameTF.setStyle("-fx-border-color: #ae0700");
+        } else {
+            modifyPartNameTF.setStyle("-fx-border-color: #9f07");
+        }
         if(!maxCheck) {
             modifyPartMaxTF.setStyle("-fx-border-color: #ae0700");
         } else {

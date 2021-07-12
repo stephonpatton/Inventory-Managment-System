@@ -93,7 +93,7 @@ public class AddPartController implements Initializable {
      */
     public boolean checkAddPartName() {
         if(addPartNameTF.getLength() == 0 || addPartNameTF.getText().matches("[0-9]*")) {
-            //TODO: Add alert box or error label box
+            nameCheck = false;
             System.out.println("Please provide a name");
             return false;
         } else {
@@ -228,6 +228,16 @@ public class AddPartController implements Initializable {
         checkMaxField();
         checkMinFields();
         checkMachineIdFields();
+        checkNameField();
+    }
+
+    private void checkNameField() {
+        String input = addPartNameTF.getText();
+        if(input.matches("[0-9]*") || input.length() == 0) {
+            nameCheck = false;
+        } else {
+            nameCheck = true;
+        }
     }
 
     private void checkMinFields() {
@@ -357,8 +367,8 @@ public class AddPartController implements Initializable {
      */
     public boolean createPart() {
         boolean success = false;
-        String partName = addPartNameTF.getText();
         try {
+            String partName = addPartNameTF.getText();
             double partPrice = Double.parseDouble(addPartPriceTF.getText());
             int partStock = Integer.parseInt(addPartInvTF.getText());
             int partMin = Integer.parseInt(addPartMinTF.getText());
@@ -418,6 +428,11 @@ public class AddPartController implements Initializable {
     }
 
     public void presentErrors() {
+        if(!nameCheck) {
+            addPartNameTF.setStyle("-fx-border-color: #ae0700");
+        } else {
+            addPartNameTF.setStyle("-fx-border-color: #9f07");
+        }
         if(!maxCheck) {
             addPartMaxTF.setStyle("-fx-border-color: #ae0700");
         } else {
