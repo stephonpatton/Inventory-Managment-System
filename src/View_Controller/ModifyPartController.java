@@ -97,50 +97,70 @@ public class ModifyPartController implements Initializable {
     public boolean createPart() {
         boolean created = false;
         //Gets input data
-        try {
-            String partName = modifyPartNameTF.getText();
-            double partPrice = Double.parseDouble(modifyPartPriceTF.getText());
-            int partStock = Integer.parseInt(modifyPartInvTF.getText());
-            int partMax = Integer.parseInt(modifyPartMaxTF.getText());
-            int partMin = Integer.parseInt(modifyPartMinTF.getText());
+        if(checkAllErrors()) {
+            try {
+                String partName = modifyPartNameTF.getText();
+                double partPrice = Double.parseDouble(modifyPartPriceTF.getText());
+                int partStock = Integer.parseInt(modifyPartInvTF.getText());
+                int partMax = Integer.parseInt(modifyPartMaxTF.getText());
+                int partMin = Integer.parseInt(modifyPartMinTF.getText());
 
-            //Checks which radio button is selected and creates part based on that
-            if (sourceButton.isSelected()) {
-                if (modifyPartMachineCompTF.getText().matches("[0-9]*")) {
-                    int machineID = Integer.parseInt(modifyPartMachineCompTF.getText());
-                    InhousePart newInhousePart = new InhousePart(partToModify().getId(), partName, partPrice, partStock, partMin, partMax, machineID);
-                    Inventory.updatePart(partIndexToModify(), newInhousePart);
-                    machineIdCheck = true;
-                    created = true;
-                } else {
-                    created = false;
-                    machineIdCheck = false;
-                    System.out.println("Please include numbers only for machine ID");
+                //Checks which radio button is selected and creates part based on that
+                if (sourceButton.isSelected()) {
+                    if (modifyPartMachineCompTF.getText().matches("[0-9]*")) {
+                        int machineID = Integer.parseInt(modifyPartMachineCompTF.getText());
+                        InhousePart newInhousePart = new InhousePart(partToModify().getId(), partName, partPrice, partStock, partMin, partMax, machineID);
+                        Inventory.updatePart(partIndexToModify(), newInhousePart);
+                        machineIdCheck = true;
+                        created = true;
+                    } else {
+                        created = false;
+                        machineIdCheck = false;
+                        System.out.println("Please include numbers only for machine ID");
+                    }
+                } else if (outsourcedButton.isSelected()) {
+                    if (modifyPartMachineCompTF.getText().length() != 0 && !modifyPartMachineCompTF.getText().matches("[0-9]*")) {
+                        String compName = modifyPartMachineCompTF.getText();
+                        OutsourcedPart outsourcedPart = new OutsourcedPart(partToModify().getId(), partName, partPrice, partStock, partMin, partMax, compName);
+                        Inventory.updatePart(partIndexToModify(), outsourcedPart);
+                        companyNameCheck = true;
+                        created = true;
+                    } else {
+                        created = false;
+                        companyNameCheck = false;
+                        System.out.println("Please only include letters");
+                    }
                 }
-            } else if (outsourcedButton.isSelected()) {
-                if (modifyPartMachineCompTF.getText().length() != 0 && !modifyPartMachineCompTF.getText().matches("[0-9]*")) {
-                    String compName = modifyPartMachineCompTF.getText();
-                    OutsourcedPart outsourcedPart = new OutsourcedPart(partToModify().getId(), partName, partPrice, partStock, partMin, partMax, compName);
-                    Inventory.updatePart(partIndexToModify(), outsourcedPart);
-                    companyNameCheck = true;
-                    created = true;
-                } else {
-                    created = false;
-                    companyNameCheck = false;
-                    System.out.println("Please only include letters");
-                }
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Unable to create part");
+                alert.setContentText("Please check fields highlighted in red to fix errors");
+                alert.showAndWait().ifPresent(response -> {
+
+                });
+                System.err.println("Error creating part.. Check fields in red");
             }
-        }catch(Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Unable to create part");
-            alert.setContentText("Please check fields highlighted in red to fix errors");
-            alert.showAndWait().ifPresent(response -> {
 
-            });
-            System.err.println("Error creating part.. Check fields in red");
         }
-
         return created;
+    }
+
+    public boolean checkAllErrors() {
+        boolean isValid = false;
+        if(sourceButton.isSelected()) {
+            if(machineIdCheck && nameCheck && maxCheck && minCheck && invCheck && priceCheck) {
+                isValid = true;
+            } else {
+                isValid = false;
+            }
+        } else if(outsourcedButton.isSelected()) {
+            if(companyNameCheck && nameCheck && maxCheck && minCheck && invCheck && priceCheck) {
+                isValid = true;
+            } else {
+                isValid = false;
+            }
+        }
+        return isValid;
     }
 
     /**
@@ -231,12 +251,28 @@ public class ModifyPartController implements Initializable {
         } else if(!checkDifferences()) {
             checkAllFields();
             presentErrors();
-            if(createPart()) {
+            if (createPart()) {
                 cancelModifyPart(actionEvent);
             } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Unable to create part");
+                alert.setContentText("Please check fields highlighted in red to fix errors");
+                alert.showAndWait().ifPresent(response -> {
+
+                });
+                System.err.println("Error creating part.. Check fields in red");
                 setAllChecksToFalse();
             }
         }
+    }
+
+    private void setAllChecksToTrue() {
+        companyNameCheck = true;
+        nameCheck = true;
+        maxCheck = true;
+        minCheck = true;
+        priceCheck = true;
+        invCheck = true;
     }
 
     /**
@@ -364,6 +400,7 @@ public class ModifyPartController implements Initializable {
         String input = modifyPartNameTF.getText();
         if(input.matches("[0-9]*") || input.length() == 0){
             nameCheck = false;
+            System.err.println("Please exclude numbers or empty data fields");
         } else {
             nameCheck = true;
         }
