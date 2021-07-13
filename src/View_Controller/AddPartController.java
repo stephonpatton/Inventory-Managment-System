@@ -171,8 +171,10 @@ public class AddPartController implements Initializable {
      */
     public boolean checkAddPartSource() {
         if(sourceButton.isSelected()) {
+            System.out.println("INHOUSE SELECTED");
             return checkAddPartMachineID();
         } else if(addPartOutsourcedButton.isSelected()) {
+            System.out.println("OUTSOURCED SELECTED");
             return checkAddPartCompName();
         } else {
             System.out.println("Please select a part source.");
@@ -188,6 +190,7 @@ public class AddPartController implements Initializable {
     public boolean checkAddPartCompName() {
         if(addPartMachineIDCompNameTF.getLength() != 0 && !addPartMachineIDCompNameTF.getText().matches("[0-9]*")) {
             companyNameCheck = true;
+            System.out.println("COMPANY NAME TRUE");
             return true;
         } else {
             //TODO: Alert box
@@ -204,6 +207,7 @@ public class AddPartController implements Initializable {
     public boolean checkAddPartMachineID() {
         if(addPartMachineIDCompNameTF.getText().matches("[0-9]*") && addPartMachineIDCompNameTF.getLength() != 0) {
             machineIdCheck = true;
+            System.out.println("MACHINE ID TRUE");
             return true;
         } else {
             //TODO: Alert box
@@ -220,6 +224,7 @@ public class AddPartController implements Initializable {
         invCheck = false;
         machineIdCheck = false;
         companyNameCheck = false;
+        nameCheck = false;
     }
 
     private void checkAllFields() {
@@ -229,11 +234,13 @@ public class AddPartController implements Initializable {
         checkMinFields();
         checkMachineIdFields();
         checkNameField();
+//        checkAddPartCompName();
     }
 
     private void checkNameField() {
         String input = addPartNameTF.getText();
-        if(input.matches("[0-9]*") || input.length() == 0) {
+//        if(input.matches(".*\\d.*") || input.length() == 0) {
+        if(input.matches(".*\\d.*") || input.length() == 0){
             nameCheck = false;
         } else {
             nameCheck = true;
@@ -302,7 +309,7 @@ public class AddPartController implements Initializable {
                 machineIdCheck = false;
                 System.err.println("Provide numbers only for machine ID");
             }
-        } else if(addPartOutsourcedButton.isSelected()){
+        } else {
             String input = addPartMachineIDCompNameTF.getText();
             if(input.matches("[0-9]*") || input.length() == 0) {
                 System.err.println("Please exclude numbers or empty data fields");
@@ -318,37 +325,33 @@ public class AddPartController implements Initializable {
      * @param actionEvent When the save button is pressed
      */
     public void addPartSubmit(ActionEvent actionEvent) {
-//        boolean success = false;
-//        if(checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-//        && checkAddPartMin() && checkAddPartSource()) {
-//            success = createPart();
-//        }
-//        if(success) {
+//        if(checkDifferences()) {
 //            cancelAddPart(actionEvent);
-//        } else {
-//            ButtonType okayButton = new ButtonType("Okay");
-//            ButtonType cancelButton = new ButtonType("Cancel");
-//            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Part not created", okayButton, cancelButton);
-//            alert.showAndWait().ifPresent(response -> {
-//                if(response == okayButton) {
-//                    alert.close();
-//                } else if(response == cancelButton) {
-//                    alert.close();
-//                }
-//            });
+//        } else if(!checkDifferences()) {
+//            checkAllFields();
+//            checkIfInvValid();
+//            presentErrors();
+//            if(createPart()) {
+//                cancelAddPart(actionEvent);
+//            } else {
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setHeaderText("Unable to create part");
+//                alert.setContentText("Please check fields highlighted in red to fix errors");
+//                alert.showAndWait().ifPresent(response -> {
+//
+//                });
+//                System.err.println("Error creating part.. Check fields in red");
+//                setAllChecksToFalse();
+//            }
 //        }
-        if(checkDifferences()) {
+        checkAllFields();
+        checkIfInvValid();
+        presentErrors();
+        if(createPart()) {
             cancelAddPart(actionEvent);
-        } else if(!checkDifferences()) {
-            checkAllFields();
-            presentErrors();
-            if(createPart()) {
-                cancelAddPart(actionEvent);
-            } else {
-                setAllChecksToFalse();
-            }
+        } else {
+            setAllChecksToFalse();
         }
-
     }
 
     /**
@@ -358,8 +361,52 @@ public class AddPartController implements Initializable {
     public boolean checkDifferences() {
         //Checks if data inputted is different from data already in inventory
         //            createPart();
-        return checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-                && checkAddPartMin() && checkAddPartCompName();
+//        if(sourceButton.isSelected()) {
+        boolean value = checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
+                && checkAddPartMin() && checkAddPartSource();
+        System.out.println("VALUE OF CHECK DIFF RN " + value);
+            return checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
+                    && checkAddPartMin() && checkAddPartSource();
+//        } else {
+//            return checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
+//                    && checkAddPartMin() && checkAddPartCompName() ;
+//        }
+    }
+
+    private void checkIfInvValid() {
+        try {
+            int min = Integer.parseInt(addPartMinTF.getText());
+            int max = Integer.parseInt(addPartMaxTF.getText());
+            int inv = Integer.parseInt(addPartInvTF.getText());
+
+            if (min > max) {
+                minCheck = false;
+                maxCheck = false;
+            }
+
+            if (inv < min) {
+                invCheck = false;
+                minCheck = false;
+            }
+
+            if (inv > max) {
+                invCheck = false;
+                maxCheck = false;
+            }
+
+            if ((inv < max) && (inv > min)) {
+                invCheck = true;
+                maxCheck = true;
+                minCheck = true;
+            }
+        }catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Numbers only for inv, min, and max");
+            alert.setContentText("Please only include numbers for inventory, min, and max");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        }
     }
 
     /**
@@ -374,9 +421,16 @@ public class AddPartController implements Initializable {
             int partMin = Integer.parseInt(addPartMinTF.getText());
             int partMax = Integer.parseInt(addPartMaxTF.getText());
             String partMachineId = addPartMachineIDCompNameTF.getText();
+            if(partName.length() == 0 || partName.matches("[0-9]*")) {
+//            if(partName.matches(".*\\d.*") || partName.length() == 0){
 
-            if (checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-                    && checkAddPartMin() && checkAddPartSource()) {
+                success = false;
+                nameCheck = false;
+                return success;
+            }
+
+//            if (checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
+//                    && checkAddPartMin() && checkAddPartSource()) {
                 if ((partStock > partMin) & (partStock <= partMax)) {
                     if (sourceButton.isSelected()) {
                         InhousePart newInhousePart = new InhousePart(partID, partName, partPrice, partStock, partMin, partMax,
@@ -402,7 +456,7 @@ public class AddPartController implements Initializable {
                         }
                     });
                 }
-            }
+//            }
         }catch(Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Unable to create part");
@@ -413,6 +467,7 @@ public class AddPartController implements Initializable {
             System.err.println("Error creating part.. Check fields in red");
         }
 
+        System.out.println("SUCCESS = " + success);
         return success;
     }
 
@@ -467,4 +522,6 @@ public class AddPartController implements Initializable {
             }
         }
     }
+
+    //TODO: Don't let numbers be included in name and company name (modifypart works)
 }

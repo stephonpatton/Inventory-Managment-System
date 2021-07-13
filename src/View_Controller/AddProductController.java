@@ -104,7 +104,7 @@ public class AddProductController implements Initializable {
      */
     public boolean createProduct() {
         boolean created = false;
-            presentErrors();
+//            presentErrors();
             //Create product object that is being added to inventory
             Product newProduct;
             //Setting attributes based on information from user
@@ -114,12 +114,17 @@ public class AddProductController implements Initializable {
                 double productPrice = Double.parseDouble(addProductPrice.getText());
                 int productMin = Integer.parseInt(addProductMin.getText());
                 int productMax = Integer.parseInt(addProductMax.getText());
-                newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
-                addAllPartsToProduct(tempList, newProduct);
-                //Adding to inventory
-                Inventory.addProduct(newProduct);
-                created = true;
-                setAllChecksToFalse();
+                checkIfInvValid();
+                if(minCheck && maxCheck && invCheck) {
+                    newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+                    addAllPartsToProduct(tempList, newProduct);
+                    //Adding to inventory
+                    Inventory.addProduct(newProduct);
+                    created = true;
+                    setAllChecksToFalse();
+                } else {
+
+                }
             } catch (Exception e) {
                 presentErrors();
                 System.err.println("Please provide numbers only");
@@ -269,7 +274,6 @@ public class AddProductController implements Initializable {
 //        }
 
         if(areFieldsValid()) {
-
             if(createProduct()) {
                 cancelAddProduct(actionEvent);
             } else {
@@ -277,6 +281,7 @@ public class AddProductController implements Initializable {
             }
         } else {
             checkAllFields();
+            checkIfInvValid();
             presentErrors();
             System.out.println("Please enter valid data");
         }
@@ -418,6 +423,18 @@ public class AddProductController implements Initializable {
         checkInvField();
         checkMaxField();
         checkMinField();
+        checkNameField();
+    }
+
+    private void checkNameField() {
+        String input = addProductName.getText();
+        if(input.matches(".*\\d.*") || input.length() == 0){
+//        if(input.matches("[0-9]*") || input.length() == 0){
+            nameCheck = false;
+            System.err.println("Please exclude numbers or empty data fields");
+        } else {
+            nameCheck = true;
+        }
     }
 
     private void checkMinField() {
@@ -506,6 +523,57 @@ public class AddProductController implements Initializable {
         } else {
             addProductPrice.setStyle("-fx-border-color: #9f07");
         }
+
+        if(!nameCheck) {
+            addProductName.setStyle("-fx-border-color: #ae0700");
+        } else {
+            addProductName.setStyle("-fx-border-color: #9f07");
+        }
+    }
+
+    private void checkIfInvValid() {
+        try {
+            int min = Integer.parseInt(addProductMin.getText());
+            int max = Integer.parseInt(addProductMax.getText());
+            int inv = Integer.parseInt(addProductInv.getText());
+
+            if(min > max) {
+                minCheck = false;
+                maxCheck = false;
+            }
+
+            if(inv < min) {
+                invCheck = false;
+                minCheck = false;
+            }
+
+            if(inv > max) {
+                invCheck = false;
+                maxCheck = false;
+            }
+
+            if((inv < max) && (inv > min)) {
+                invCheck = true;
+                maxCheck = true;
+                minCheck = true;
+            }
+        }catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Numbers only for inv, min, and max");
+            alert.setContentText("Please only include numbers for inventory, min, and max");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        }
+        if(!maxCheck || !minCheck || !invCheck) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Numbers only for inv, min, and max");
+            alert.setContentText("Please only include numbers for inventory, min, and max");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        }
+        presentErrors();
     }
 
     /**
@@ -516,8 +584,7 @@ public class AddProductController implements Initializable {
         minCheck = false;
         priceCheck = false;
         invCheck = false;
+        nameCheck = false;
     }
-
-    //TODO: Highlight fields with invalid data
-    //TODO: Alert boxes as needed (when product fails to create)
+    //TODO: Logical errors for inventory
 }

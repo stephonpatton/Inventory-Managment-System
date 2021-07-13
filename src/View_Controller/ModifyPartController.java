@@ -106,6 +106,7 @@ public class ModifyPartController implements Initializable {
                 int partMin = Integer.parseInt(modifyPartMinTF.getText());
 
                 //Checks which radio button is selected and creates part based on that
+                if((partStock > partMin) & (partStock <= partMax)) {
                 if (sourceButton.isSelected()) {
                     if (modifyPartMachineCompTF.getText().matches("[0-9]*")) {
                         int machineID = Integer.parseInt(modifyPartMachineCompTF.getText());
@@ -130,6 +131,20 @@ public class ModifyPartController implements Initializable {
                         companyNameCheck = false;
                         System.out.println("Please only include letters");
                     }
+                }
+                } else {
+                    ButtonType okayButton = new ButtonType("Okay");
+                    ButtonType cancelButton = new ButtonType("Cancel");
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "", okayButton, cancelButton);
+                    alert.setContentText("Min < Max and Inventory in between min and max");
+                    alert.setHeaderText("Please fix min, max, and inventory values");
+                    alert.showAndWait().ifPresent(response -> {
+                        if (response == okayButton) {
+                            alert.close();
+                        } else if (response == cancelButton) {
+                            alert.close();
+                        }
+                    });
                 }
             } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -250,6 +265,7 @@ public class ModifyPartController implements Initializable {
             cancelModifyPart(actionEvent);
         } else if(!checkDifferences()) {
             checkAllFields();
+            checkIfInvValid();
             presentErrors();
             if (createPart()) {
                 cancelModifyPart(actionEvent);
@@ -275,6 +291,33 @@ public class ModifyPartController implements Initializable {
         invCheck = true;
     }
 
+    private void checkIfInvValid() {
+        int min = Integer.parseInt(modifyPartMinTF.getText());
+        int max = Integer.parseInt(modifyPartMaxTF.getText());
+        int inv = Integer.parseInt(modifyPartInvTF.getText());
+
+        if(min > max) {
+            minCheck = false;
+            maxCheck = false;
+        }
+
+        if(inv < min) {
+            invCheck = false;
+            minCheck = false;
+        }
+
+        if(inv > max) {
+            invCheck = false;
+            maxCheck = false;
+        }
+
+        if((inv < max) && (inv > min)) {
+            invCheck = true;
+            maxCheck = true;
+            minCheck = true;
+        }
+    }
+
     /**
      * Checks if part name is different from part name in inventory
      * @return True if no differences
@@ -293,7 +336,6 @@ public class ModifyPartController implements Initializable {
             isTheSame = false;
         }
         return isTheSame;
-//        return modifyPartNameTF.getText().equals(Inventory.getAllParts().get(partIndexToModify()).getName());
     }
 
     /**
@@ -398,7 +440,7 @@ public class ModifyPartController implements Initializable {
 
     private void checkNameField() {
         String input = modifyPartNameTF.getText();
-        if(input.matches("[0-9]*") || input.length() == 0){
+        if(input.matches(".*\\d.*") || input.length() == 0){
             nameCheck = false;
             System.err.println("Please exclude numbers or empty data fields");
         } else {
@@ -521,5 +563,7 @@ public class ModifyPartController implements Initializable {
             }
         }
     }
+
+    //TODO: Logical handling inv max min
 }
 
