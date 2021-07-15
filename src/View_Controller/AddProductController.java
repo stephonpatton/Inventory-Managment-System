@@ -108,22 +108,23 @@ public class AddProductController implements Initializable {
             //Create product object that is being added to inventory
             Product newProduct;
             //Setting attributes based on information from user
-            String productName = addProductName.getText();
             try {
+                String productName = addProductName.getText();
                 int productStock = Integer.parseInt(addProductInv.getText());
                 double productPrice = Double.parseDouble(addProductPrice.getText());
                 int productMin = Integer.parseInt(addProductMin.getText());
                 int productMax = Integer.parseInt(addProductMax.getText());
-                checkIfInvValid();
-                if(minCheck && maxCheck && invCheck) {
-                    newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
+                boolean invValid = checkIfInvValid();
+                if(invValid) {
+                    newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMin, productMax);
                     addAllPartsToProduct(tempList, newProduct);
                     //Adding to inventory
                     Inventory.addProduct(newProduct);
                     created = true;
                     setAllChecksToFalse();
                 } else {
-
+                    presentErrors();
+                    setAllChecksToFalse();
                 }
             } catch (Exception e) {
                 presentErrors();
@@ -215,7 +216,7 @@ public class AddProductController implements Initializable {
 
     private boolean areFieldsValid() {
         return checkAddProductMin() && checkAddProductMax() && checkAddProductPrice() && checkAddProductInv()
-                && checkAddProductName();
+                && checkAddProductName() && checkIfInvValid();
     }
 
     /**
@@ -274,19 +275,38 @@ public class AddProductController implements Initializable {
 //        }
 
         if(areFieldsValid()) {
-            if(createProduct()) {
-                cancelAddProduct(actionEvent);
-            } else {
-                setAllChecksToFalse();
-            }
+//            if(checkIfInvValid()) {
+                if (createProduct()) {
+                    cancelAddProduct(actionEvent);
+                } else {
+                    presentErrors();
+//                    setAllChecksToFalse();
+                }
+//            }
+//        else {
+//                presentErrors();
+//            }
         } else {
+//            checkIfInvValid();
             checkAllFields();
-            checkIfInvValid();
+//            minCheck = false;
+//            maxCheck = false;
+//            invCheck = false;
+            if(checkIfInvValid()) {
+                presentErrors();
+            } else {
+//                maxCheck = false;
+//                minCheck = false;
+//                invCheck = false;
+            }
             presentErrors();
             System.out.println("Please enter valid data");
+            errorAlertBox();
         }
     }
 
+
+    //TODO: Add same name error handling as I did with ModifyProduct using char array and isdigit
 
     /**
      * Adds all parts from associated table to the product
@@ -393,6 +413,7 @@ public class AddProductController implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchPartById(query);
             if(idList.size() == 0) {
+                noResultAlert("No part found", "No part was found with that query");
                 updatePartsTable();
             } else {
                 availablePartTableView.setItems(idList);
@@ -401,6 +422,7 @@ public class AddProductController implements Initializable {
             //Checks if query is searching for name or partial name
             ObservableList<Part> tmpList = searchPartByName(query);
             if(tmpList.size() == 0) {
+                noResultAlert("No part found", "No part was found with that query");
                 updatePartsTable();
             } else {
                 availablePartTableView.setItems(tmpList);
@@ -531,7 +553,8 @@ public class AddProductController implements Initializable {
         }
     }
 
-    private void checkIfInvValid() {
+    private boolean checkIfInvValid() {
+        boolean isValid = false;
         try {
             int min = Integer.parseInt(addProductMin.getText());
             int max = Integer.parseInt(addProductMax.getText());
@@ -540,30 +563,34 @@ public class AddProductController implements Initializable {
             if(min > max) {
                 minCheck = false;
                 maxCheck = false;
+                isValid = false;
             }
 
             if(inv < min) {
                 invCheck = false;
                 minCheck = false;
+                isValid = false;
             }
 
             if(inv > max) {
                 invCheck = false;
                 maxCheck = false;
+                isValid = false;
             }
 
-            if((inv < max) && (inv > min)) {
+            if((inv <= max) && (inv >= min)) {
                 invCheck = true;
                 maxCheck = true;
                 minCheck = true;
+                isValid = true;
             }
         }catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Numbers only for inv, min, and max");
-            alert.setContentText("Please only include numbers for inventory, min, and max");
-            alert.showAndWait().ifPresent(response -> {
-
-            });
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setHeaderText("Numbers only for inv, min, and max");
+//            alert.setContentText("Please only include numbers for inventory, min, and max");
+//            alert.showAndWait().ifPresent(response -> {
+//
+//            });
         }
         if(!maxCheck || !minCheck || !invCheck) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -573,7 +600,8 @@ public class AddProductController implements Initializable {
 
             });
         }
-        presentErrors();
+//        presentErrors();
+        return isValid;
     }
 
     /**
@@ -585,6 +613,15 @@ public class AddProductController implements Initializable {
         priceCheck = false;
         invCheck = false;
         nameCheck = false;
+    }
+
+    private void errorAlertBox() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText("Product was not created");
+        alert.setContentText("Check red highlighted fields to fix errors");
+        alert.showAndWait().ifPresent(response -> {
+
+        });
     }
     //TODO: Logical errors for inventory
 }

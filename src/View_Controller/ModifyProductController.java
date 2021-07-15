@@ -220,14 +220,21 @@ public class ModifyProductController implements Initializable {
         //Checks if differences are present; if not it checks for errors then tries to create new product
         if(checkDifferences()) {
             cancelModifyProduct(actionEvent);
-        } else if(!checkDifferences()){
+        } else if(!checkDifferences()) {
             checkAllFields();
             presentErrors();
-            if(createProduct()) {
-                cancelModifyProduct(actionEvent);
+            if (checkIfInvValid()) {
+                if (createProduct()) {
+                    cancelModifyProduct(actionEvent);
+                } else {
+//                    setAllChecksToFalse();
+                }
             } else {
-                setAllChecksToFalse();
+//                maxCheck = false;
+//                minCheck = false;
+//                invCheck = false;
             }
+            presentErrors();
         }
     }
 
@@ -239,6 +246,7 @@ public class ModifyProductController implements Initializable {
         minCheck = false;
         priceCheck = false;
         invCheck = false;
+        nameCheck = false;
     }
 
     /**
@@ -281,6 +289,11 @@ public class ModifyProductController implements Initializable {
         } else {
             modifyProductPriceTF.setStyle("-fx-border-color: #9f07");
         }
+        if(!nameCheck) {
+            modifyProductNameTF.setStyle("-fx-border-color: #ae0700");
+        } else {
+            modifyProductNameTF.setStyle("-fx-border-color: #9f07");
+        }
     }
 
     /**
@@ -291,6 +304,31 @@ public class ModifyProductController implements Initializable {
         checkInvField();
         checkMaxField();
         checkMinField();
+        checkNameField();
+    }
+
+    private void checkNameField() {
+        String input = modifyProductNameTF.getText();
+        char[] chars = input.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for(char c : chars) {
+            if(Character.isDigit(c)) {
+                sb.append(c);
+            }
+        }
+        if(sb.length() == 0) {
+            if(input.length() == 0 || input.matches("[0-9]*")) {
+                System.err.println("Provide a name please");
+                nameCheck = false;
+                //TODO: TOMORROW
+            } else {
+                System.out.println(sb);
+                nameCheck = true;
+            }
+        } else {
+            nameCheck = false;
+        }
+
     }
 
     /**
@@ -415,7 +453,6 @@ public class ModifyProductController implements Initializable {
             System.err.println("Please provide a number for price");
             priceCheck = false;
         }
-
         return isTheSame;
     }
 
@@ -435,7 +472,6 @@ public class ModifyProductController implements Initializable {
             System.err.println("Please provide a number for inventory");
             invCheck = false;
         }
-
         return isTheSame;
     }
 
@@ -457,22 +493,33 @@ public class ModifyProductController implements Initializable {
                 && checkProductMinDiff()) {
             System.out.println("No differences");
         } else {
-            presentErrors();
-            String productName = modifyProductNameTF.getText();
             try {
-                int productStock = Integer.parseInt(modifyProductInvTF.getText());
-                double productPrice = Double.parseDouble(modifyProductPriceTF.getText());
-                int productMax = Integer.parseInt(modifyProductMaxTF.getText());
-                int productMin = Integer.parseInt(modifyProductMinTF.getText());
-
-                Product newProduct = new Product(productToModify().getId(), productName, productPrice, productStock, productMin, productMax);
-                for(Part part : productToModify().getAssociatedParts()) {
-                    newProduct.addAssociatePart(part);
+                String productName = modifyProductNameTF.getText();
+                char[] chars = productName.toCharArray();
+                StringBuilder sb = new StringBuilder();
+                for (char c : chars) {
+                    if (Character.isDigit(c)) {
+                        sb.append(c);
+                    }
                 }
-                Inventory.updateProduct(productIndexToModify(), newProduct);
-                System.out.println("Product updated successfully");
-                created = true;
-                setAllChecksToFalse();
+                if(sb.length() == 0) {
+                    int productStock = Integer.parseInt(modifyProductInvTF.getText());
+                    double productPrice = Double.parseDouble(modifyProductPriceTF.getText());
+                    int productMax = Integer.parseInt(modifyProductMaxTF.getText());
+                    int productMin = Integer.parseInt(modifyProductMinTF.getText());
+
+                    Product newProduct = new Product(productToModify().getId(), productName, productPrice, productStock, productMin, productMax);
+                    for (Part part : productToModify().getAssociatedParts()) {
+                        newProduct.addAssociatePart(part);
+                    }
+                    Inventory.updateProduct(productIndexToModify(), newProduct);
+                    System.out.println("Product updated successfully");
+                    created = true;
+                    setAllChecksToFalse();
+                } else {
+                    created = false;
+                    setAllChecksToFalse();
+                }
             }catch(Exception ex) {
                 presentErrors();
                 System.err.println("Please provide numbers only");
@@ -556,6 +603,57 @@ public class ModifyProductController implements Initializable {
      */
     public void updatePartsTable() {
         availablePartTableView.setItems(Inventory.getAllParts());
+    }
+
+    private boolean checkIfInvValid() {
+        boolean isValid = false;
+        try {
+            int min = Integer.parseInt(modifyProductMinTF.getText());
+            int max = Integer.parseInt(modifyProductMaxTF.getText());
+            int inv = Integer.parseInt(modifyProductInvTF.getText());
+
+            if(min > max) {
+                minCheck = false;
+                maxCheck = false;
+                isValid = false;
+            }
+
+            if(inv < min) {
+                invCheck = false;
+                minCheck = false;
+                isValid = false;
+            }
+
+            if(inv > max) {
+                invCheck = false;
+                maxCheck = false;
+                isValid = false;
+            }
+
+            if((inv <= max) && (inv >= min)) {
+                invCheck = true;
+                maxCheck = true;
+                minCheck = true;
+                isValid = true;
+            }
+        }catch (Exception e) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setHeaderText("Numbers only for inv, min, and max");
+//            alert.setContentText("Please only include numbers for inventory, min, and max");
+//            alert.showAndWait().ifPresent(response -> {
+//
+//            });
+        }
+        if(!maxCheck || !minCheck || !invCheck) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Numbers only for inv, min, and max");
+            alert.setContentText("Please only include numbers for inventory, min, and max");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        }
+//        presentErrors();
+        return isValid;
     }
 
     //TODO: Error boxes maybe?

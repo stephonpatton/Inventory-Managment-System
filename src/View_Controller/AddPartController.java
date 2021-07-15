@@ -394,7 +394,7 @@ public class AddPartController implements Initializable {
                 maxCheck = false;
             }
 
-            if ((inv < max) && (inv > min)) {
+            if ((inv <= max) && (inv >= min)) {
                 invCheck = true;
                 maxCheck = true;
                 minCheck = true;
@@ -431,7 +431,7 @@ public class AddPartController implements Initializable {
 
 //            if (checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
 //                    && checkAddPartMin() && checkAddPartSource()) {
-                if ((partStock > partMin) & (partStock <= partMax)) {
+                if ((partStock >= partMin) & (partStock <= partMax)) {
                     if (sourceButton.isSelected()) {
                         InhousePart newInhousePart = new InhousePart(partID, partName, partPrice, partStock, partMin, partMax,
                                 Integer.parseInt(partMachineId));

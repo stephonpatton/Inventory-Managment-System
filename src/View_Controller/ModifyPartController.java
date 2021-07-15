@@ -106,7 +106,7 @@ public class ModifyPartController implements Initializable {
                 int partMin = Integer.parseInt(modifyPartMinTF.getText());
 
                 //Checks which radio button is selected and creates part based on that
-                if((partStock > partMin) & (partStock <= partMax)) {
+                if((partStock >= partMin) & (partStock <= partMax)) {
                 if (sourceButton.isSelected()) {
                     if (modifyPartMachineCompTF.getText().matches("[0-9]*")) {
                         int machineID = Integer.parseInt(modifyPartMachineCompTF.getText());
@@ -311,7 +311,7 @@ public class ModifyPartController implements Initializable {
             maxCheck = false;
         }
 
-        if((inv < max) && (inv > min)) {
+        if((inv <= max) && (inv >= min)) {
             invCheck = true;
             maxCheck = true;
             minCheck = true;

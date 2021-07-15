@@ -339,6 +339,8 @@ public class MainController extends Application implements Initializable {
      */
     public void deletePartFromTable() {
         //Gets the part from the table
+        tempPartIndex = getAllParts().indexOf(tempPart);
+
         if(partsTableView.getSelectionModel().getSelectedItem() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Please select a part to delete");
@@ -356,7 +358,6 @@ public class MainController extends Application implements Initializable {
             //Handling alert window response
             alert.showAndWait().ifPresent(response -> {
                 if (response == deleteButton) {
-                    tempPartIndex = getAllParts().indexOf(tempPart);
                     if (deletePart(tempPart)) {
                         System.out.println("Successfully deleted");
                     } else {
@@ -392,11 +393,26 @@ public class MainController extends Application implements Initializable {
             } else {
                 //Deletes product is no associated parts
                 tempProductIndex = getAllProducts().indexOf(tempProduct);
-                if (deleteProduct(tempProduct)) {
-                    System.out.println("Successfully deleted product");
-                } else {
-                    System.out.println("Was not deleted");
-                }
+                ButtonType yesButton = new ButtonType("Yes");
+                ButtonType noButton = new ButtonType("No");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Confirming product deletion", yesButton, noButton);
+                alert.setContentText("Are you sure you want to delete this product?");
+                alert.showAndWait().ifPresent(response -> {
+                    if(response == yesButton) {
+                        if (deleteProduct(tempProduct)) {
+                            System.out.println("Successfully deleted product");
+                        } else {
+                            Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Error removing product");
+                            errorAlert.setContentText("There was an error removing product, please try again");
+                            errorAlert.showAndWait().ifPresent(reply -> {
+
+                            });
+                            System.out.println("Was not deleted");
+                        }
+                    } else if(response == noButton){
+                        alert.close();
+                    }
+                });
             }
         }
     }
