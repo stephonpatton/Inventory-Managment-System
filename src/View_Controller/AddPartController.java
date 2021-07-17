@@ -43,7 +43,7 @@ public class AddPartController implements Initializable {
     //Text field for ID
     @FXML private TextField addPartIDTextField;
 
-    //Boolean variables to check if fields have valid data
+    //Boolean variables to check if fields have valid data (used for highlighting fields)
     private boolean minCheck;
     private boolean maxCheck;
     private boolean priceCheck;
@@ -110,7 +110,6 @@ public class AddPartController implements Initializable {
             invCheck = true;
             return true;
         } else {
-            //TODO: Alert box
             invCheck = false;
             System.out.println("Please use numbers only");
             return false;
@@ -129,7 +128,6 @@ public class AddPartController implements Initializable {
         } else {
             System.out.println("Please provide numbers for price.");
             priceCheck = false;
-            //TODO: Alert box
             return false;
         }
     }
@@ -160,7 +158,6 @@ public class AddPartController implements Initializable {
         } else {
             minCheck = false;
             System.out.println("Please provide a number for min");
-            //TODO: Alert box
             return false;
         }
     }
@@ -178,7 +175,6 @@ public class AddPartController implements Initializable {
             return checkAddPartCompName();
         } else {
             System.out.println("Please select a part source.");
-            //TODO: Alert box
             return false;
         }
     }
@@ -193,7 +189,6 @@ public class AddPartController implements Initializable {
             System.out.println("COMPANY NAME TRUE");
             return true;
         } else {
-            //TODO: Alert box
             companyNameCheck = false;
             System.out.println("Please provide a company name");
             return false;
@@ -210,13 +205,15 @@ public class AddPartController implements Initializable {
             System.out.println("MACHINE ID TRUE");
             return true;
         } else {
-            //TODO: Alert box
             machineIdCheck = false;
             System.out.println("Please provide numbers only for Machine ID");
             return false;
         }
     }
 
+    /**
+     * Sets field checking values to false to reset error checking for field highlighting
+     */
     private void setAllChecksToFalse() {
         maxCheck = false;
         minCheck = false;
@@ -227,6 +224,9 @@ public class AddPartController implements Initializable {
         nameCheck = false;
     }
 
+    /**
+     * Checks all fields for valid data and sets fields to true or false for highlighting
+     */
     private void checkAllFields() {
         checkPriceField();
         checkInvField();
@@ -234,34 +234,33 @@ public class AddPartController implements Initializable {
         checkMinFields();
         checkMachineIdFields();
         checkNameField();
-//        checkAddPartCompName();
     }
 
+    /**
+     * Checks name field for errors and sets check to true or false for highlighting
+     */
     private void checkNameField() {
         String input = addPartNameTF.getText();
-//        if(input.matches(".*\\d.*") || input.length() == 0) {
-        if(input.matches(".*\\d.*") || input.length() == 0){
-            nameCheck = false;
-        } else {
-            nameCheck = true;
-        }
+        nameCheck = !input.matches(".*\\d.*") && input.length() != 0;
     }
 
+    /**
+     * Checks min field for errors and sets check to true or false for highlighting
+     */
     private void checkMinFields() {
         String input = addPartMinTF.getText();
         int tryInt;
         try {
             tryInt = Integer.parseInt(input.trim());
             minCheck = true;
-            System.out.println("minCheck changed to " + minCheck);
         }catch(Exception e) {
-            System.err.println("Please provide a number for min");
             minCheck = false;
-            System.out.println("minCheck changed to " + minCheck);
         }
-        System.out.println("value of minCheck " + minCheck);
     }
 
+    /**
+     * Checks max field for errors and sets check to true or false for highlighting
+     */
     private void checkMaxField() {
         String input = addPartMaxTF.getText();
         int tryInt = 0;
@@ -270,10 +269,12 @@ public class AddPartController implements Initializable {
             maxCheck = true;
         }catch(Exception e) {
             maxCheck = false;
-            System.err.println("Please provide a number for max");
         }
     }
 
+    /**
+     * Checks inv field for errors and sets check to true or false for highlighting
+     */
     private void checkInvField() {
         String input = addPartInvTF.getText();
         int tryInt = 0;
@@ -281,11 +282,13 @@ public class AddPartController implements Initializable {
             tryInt = Integer.parseInt(input.trim());
             invCheck = true;
         }catch (Exception e) {
-            System.err.println("Please provide a number for inventory");
             invCheck = false;
         }
     }
 
+    /**
+     * Checks price field for errors and sets check to true or false for highlighting
+     */
     private void checkPriceField() {
         String input = addPartPriceTF.getText();
         double tryDouble = 0;
@@ -293,11 +296,13 @@ public class AddPartController implements Initializable {
             tryDouble = Double.parseDouble(input.trim());
             priceCheck = true;
         }catch(Exception e) {
-            System.err.println("Please provide a number for price");
             priceCheck = false;
         }
     }
 
+    /**
+     * Checks machine ID/company name field for errors and sets check to true or false for highlighting
+     */
     private void checkMachineIdFields() {
         if(sourceButton.isSelected()) {
             String input = addPartMachineIDCompNameTF.getText();
@@ -307,16 +312,10 @@ public class AddPartController implements Initializable {
                 tryInt = Integer.parseInt(input.trim());
             } catch (Exception e) {
                 machineIdCheck = false;
-                System.err.println("Provide numbers only for machine ID");
             }
         } else {
             String input = addPartMachineIDCompNameTF.getText();
-            if(input.matches("[0-9]*") || input.length() == 0) {
-                System.err.println("Please exclude numbers or empty data fields");
-                companyNameCheck = false;
-            } else {
-                companyNameCheck = true;
-            }
+            companyNameCheck = !input.matches("[0-9]*") && input.length() != 0;
         }
     }
 
@@ -325,25 +324,6 @@ public class AddPartController implements Initializable {
      * @param actionEvent When the save button is pressed
      */
     public void addPartSubmit(ActionEvent actionEvent) {
-//        if(checkDifferences()) {
-//            cancelAddPart(actionEvent);
-//        } else if(!checkDifferences()) {
-//            checkAllFields();
-//            checkIfInvValid();
-//            presentErrors();
-//            if(createPart()) {
-//                cancelAddPart(actionEvent);
-//            } else {
-//                Alert alert = new Alert(Alert.AlertType.ERROR);
-//                alert.setHeaderText("Unable to create part");
-//                alert.setContentText("Please check fields highlighted in red to fix errors");
-//                alert.showAndWait().ifPresent(response -> {
-//
-//                });
-//                System.err.println("Error creating part.. Check fields in red");
-//                setAllChecksToFalse();
-//            }
-//        }
         checkAllFields();
         checkIfInvValid();
         presentErrors();
@@ -355,24 +335,8 @@ public class AddPartController implements Initializable {
     }
 
     /**
-     * Returns true if no differences
-     * Returns false if differences are present
+     * Logical error checking for min, max, and inv. Min < Inv < Max
      */
-    public boolean checkDifferences() {
-        //Checks if data inputted is different from data already in inventory
-        //            createPart();
-//        if(sourceButton.isSelected()) {
-        boolean value = checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-                && checkAddPartMin() && checkAddPartSource();
-        System.out.println("VALUE OF CHECK DIFF RN " + value);
-            return checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-                    && checkAddPartMin() && checkAddPartSource();
-//        } else {
-//            return checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-//                    && checkAddPartMin() && checkAddPartCompName() ;
-//        }
-    }
-
     private void checkIfInvValid() {
         try {
             int min = Integer.parseInt(addPartMinTF.getText());
@@ -394,7 +358,12 @@ public class AddPartController implements Initializable {
                 maxCheck = false;
             }
 
-            if ((inv <= max) && (inv >= min)) {
+            if(min == max) {
+                minCheck = false;
+                maxCheck = false;
+            }
+
+            if ((inv <= max) && (inv >= min) && min != max) {
                 invCheck = true;
                 maxCheck = true;
                 minCheck = true;
@@ -414,6 +383,7 @@ public class AddPartController implements Initializable {
      */
     public boolean createPart() {
         boolean success = false;
+        //Attempts to create part based on information given
         try {
             String partName = addPartNameTF.getText();
             double partPrice = Double.parseDouble(addPartPriceTF.getText());
@@ -421,17 +391,14 @@ public class AddPartController implements Initializable {
             int partMin = Integer.parseInt(addPartMinTF.getText());
             int partMax = Integer.parseInt(addPartMaxTF.getText());
             String partMachineId = addPartMachineIDCompNameTF.getText();
+            //Double checking to make sure name is valid
             if(partName.length() == 0 || partName.matches("[0-9]*")) {
-//            if(partName.matches(".*\\d.*") || partName.length() == 0){
-
                 success = false;
                 nameCheck = false;
                 return success;
             }
-
-//            if (checkAddPartName() && checkAddPartInv() && checkAddPartPrice() && checkAddPartMax()
-//                    && checkAddPartMin() && checkAddPartSource()) {
-                if ((partStock >= partMin) & (partStock <= partMax)) {
+            //Double checking to make sure inventory logical error is implemented correctly before part creation
+                if ((partStock >= partMin) & (partStock <= partMax) && partMin != partMax) {
                     if (sourceButton.isSelected()) {
                         InhousePart newInhousePart = new InhousePart(partID, partName, partPrice, partStock, partMin, partMax,
                                 Integer.parseInt(partMachineId));
@@ -456,13 +423,11 @@ public class AddPartController implements Initializable {
                         }
                     });
                 }
-//            }
         }catch(Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Unable to create part");
             alert.setContentText("Please check fields highlights in red to fix errors");
             alert.showAndWait().ifPresent(response -> {
-
             });
             System.err.println("Error creating part.. Check fields in red");
         }
@@ -482,6 +447,9 @@ public class AddPartController implements Initializable {
         addPartIDTextField.setText("AUTO GEN: " + partID);
     }
 
+    /**
+     * Highlights errors red and valid data green
+     */
     public void presentErrors() {
         if(!nameCheck) {
             addPartNameTF.setStyle("-fx-border-color: #ae0700");
@@ -522,6 +490,4 @@ public class AddPartController implements Initializable {
             }
         }
     }
-
-    //TODO: Don't let numbers be included in name and company name (modifypart works)
 }

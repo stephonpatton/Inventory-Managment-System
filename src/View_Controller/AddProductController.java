@@ -104,49 +104,34 @@ public class AddProductController implements Initializable {
      */
     public boolean createProduct() {
         boolean created = false;
-//            presentErrors();
-            //Create product object that is being added to inventory
-            Product newProduct;
-            //Setting attributes based on information from user
-            try {
-                String productName = addProductName.getText();
-                int productStock = Integer.parseInt(addProductInv.getText());
-                double productPrice = Double.parseDouble(addProductPrice.getText());
-                int productMin = Integer.parseInt(addProductMin.getText());
-                int productMax = Integer.parseInt(addProductMax.getText());
-                boolean invValid = checkIfInvValid();
-                if(invValid) {
-                    newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMin, productMax);
-                    addAllPartsToProduct(tempList, newProduct);
-                    //Adding to inventory
-                    Inventory.addProduct(newProduct);
-                    created = true;
-                    setAllChecksToFalse();
-                } else {
-                    presentErrors();
-                    setAllChecksToFalse();
-                }
-            } catch (Exception e) {
+        //Create product object that is being added to inventory
+        Product newProduct;
+        //Setting attributes based on information from user
+        try {
+            String productName = addProductName.getText();
+            int productStock = Integer.parseInt(addProductInv.getText());
+            double productPrice = Double.parseDouble(addProductPrice.getText());
+            int productMin = Integer.parseInt(addProductMin.getText());
+            int productMax = Integer.parseInt(addProductMax.getText());
+            boolean invValid = checkIfInvValid();
+            if(invValid) {
+                newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMin, productMax);
+                addAllPartsToProduct(tempList, newProduct);
+                //Adding to inventory
+                Inventory.addProduct(newProduct);
+                created = true;
+            } else {
                 presentErrors();
-                System.err.println("Please provide numbers only");
             }
+            //Resets values to false for future error checking
+            setAllChecksToFalse();
+        } catch (Exception e) {
+            presentErrors();
+            System.err.println("Please provide numbers only");
+        }
         return created;
 
     }
-//        //Create product object that is being added to inventory
-//        Product newProduct;
-//        //Setting attributes based on information from user
-//        String productName = addProductName.getText();
-//        int productStock = Integer.parseInt(addProductInv.getText());
-//        double productPrice = Double.parseDouble(addProductPrice.getText());
-//        int productMin = Integer.parseInt(addProductMin.getText());
-//        int productMax = Integer.parseInt(addProductMax.getText());
-//        newProduct = new Product(Inventory.getProductIDCount(), productName, productPrice, productStock, productMax, productMin);
-//        //Adding to inventory
-//        Inventory.addProduct(newProduct);
-//        return newProduct;
-
-
 
     /**
      * Checks if product price has data and if the data is valid (numbers only)
@@ -156,7 +141,7 @@ public class AddProductController implements Initializable {
         if((addProductPrice.getText().matches("[0-9]*") || Double.parseDouble(addProductPrice.getText()) % 1 != 0) && addProductPrice.getLength() != 0) {
             return true;
         } else {
-            System.out.println("Please provide numbers for the price.");
+            System.err.println("Please provide numbers for the price");
             return false;
         }
     }
@@ -169,7 +154,7 @@ public class AddProductController implements Initializable {
         if(addProductMin.getText().matches("[0-9]*") && addProductMin.getLength() != 0) {
             return true;
         } else {
-            System.out.println("Please provide a number for min");
+            System.err.println("Please provide a number for min");
             return false;
         }
     }
@@ -182,7 +167,7 @@ public class AddProductController implements Initializable {
         if(addProductMax.getText().matches("[0-9]*") && addProductMax.getLength() != 0) {
             return true;
         } else {
-            System.out.println("Please provide a number for max");
+            System.err.println("Please provide a number for max");
             return false;
         }
     }
@@ -195,7 +180,7 @@ public class AddProductController implements Initializable {
         if(addProductInv.getText().matches("[0-9]*") && addProductInv.getLength() != 0) {
             return true;
         } else {
-            System.out.println("Please use numbers only");
+            System.err.println("Please provide a number for inv field");
             return false;
         }
     }
@@ -206,14 +191,17 @@ public class AddProductController implements Initializable {
      */
     public boolean checkAddProductName() {
         if(addProductName.getLength() == 0 || addProductName.getText().matches("[0-9]*")) {
-            System.out.println("Please provide a name");
-            //TODO: Alert boxes for all errors
+            System.err.println("Please provide a name");
             return false;
         } else {
             return true;
         }
     }
 
+    /**
+     * Method to make sure all fields have valid data and inventory data is logically correct
+     * @return True if all fields are valid
+     */
     private boolean areFieldsValid() {
         return checkAddProductMin() && checkAddProductMax() && checkAddProductPrice() && checkAddProductInv()
                 && checkAddProductName() && checkIfInvValid();
@@ -230,6 +218,7 @@ public class AddProductController implements Initializable {
         productID = Inventory.getProductIDCount();
         addProductIdTF.setText("AUTO GEN: " + productID);
         try {
+            //Gets all products from inventory and populates table with information
             populateProductTable();
         }catch(Exception e) {
             System.err.println("No data to populate data");
@@ -255,58 +244,23 @@ public class AddProductController implements Initializable {
      * @param actionEvent Save button pressed
      */
     public void addProductSubmit(ActionEvent actionEvent) {
-//        //Checks if all data fields have valid data
-//        if(checkAddProductName() && checkAddProductInv() && checkAddProductPrice()
-//                && checkAddProductMax() && checkAddProductMin()) {
-//            //Creates product and adds associated parts to it
-//            Product product = createProduct();
-//            addAllPartsToProduct(tempList,product);
-//            cancelAddProduct(actionEvent);
-//        }
-//        if(!areFieldsValid()) {
-//            checkAllFields();
-//            presentErrors();
-//        } else {
-//            if(createProduct()) {
-//                cancelAddProduct(actionEvent);
-//            } else {
-//                setAllChecksToFalse();
-//            }
-//        }
-
+        //Checks if all data fields have valid data
         if(areFieldsValid()) {
-//            if(checkIfInvValid()) {
                 if (createProduct()) {
                     cancelAddProduct(actionEvent);
                 } else {
                     presentErrors();
-//                    setAllChecksToFalse();
                 }
-//            }
-//        else {
-//                presentErrors();
-//            }
         } else {
-//            checkIfInvValid();
             checkAllFields();
-//            minCheck = false;
-//            maxCheck = false;
-//            invCheck = false;
             if(checkIfInvValid()) {
                 presentErrors();
-            } else {
-//                maxCheck = false;
-//                minCheck = false;
-//                invCheck = false;
             }
             presentErrors();
-            System.out.println("Please enter valid data");
+            System.err.println("Please enter valid data");
             errorAlertBox();
         }
     }
-
-
-    //TODO: Add same name error handling as I did with ModifyProduct using char array and isdigit
 
     /**
      * Adds all parts from associated table to the product
@@ -396,7 +350,7 @@ public class AddProductController implements Initializable {
         }
         //Checks if no matches were found
         if(searchPart.size() == 0 ) {
-            System.out.println("No results for part name");
+            System.err.println("No results for part name");
         }
         return searchPart;
     }
@@ -448,6 +402,9 @@ public class AddProductController implements Initializable {
         checkNameField();
     }
 
+    /**
+     * Checks name field to make sure valid data is provided
+     */
     private void checkNameField() {
         String input = addProductName.getText();
         if(input.matches(".*\\d.*") || input.length() == 0){
@@ -459,6 +416,9 @@ public class AddProductController implements Initializable {
         }
     }
 
+    /**
+     * Check min field to make sure valid data is provided
+     */
     private void checkMinField() {
         String input = addProductMin.getText();
         int tryInt;
@@ -474,6 +434,9 @@ public class AddProductController implements Initializable {
         System.out.println("value of minCheck " + minCheck);
     }
 
+    /**
+     * Checks max field to make sure valid data is provided
+     */
     private void checkMaxField() {
         String input = addProductMax.getText();
         int tryInt = 0;
@@ -486,6 +449,9 @@ public class AddProductController implements Initializable {
         }
     }
 
+    /**
+     * Checks inventory field to make sure valid data is provided
+     */
     private void checkInvField() {
         String input = addProductInv.getText();
         int tryInt = 0;
@@ -498,6 +464,9 @@ public class AddProductController implements Initializable {
         }
     }
 
+    /**
+     * Checks price field to make sure valid data is provided
+     */
     private void checkPriceField() {
         String input = addProductPrice.getText();
         double tryDouble = 0;
@@ -510,17 +479,21 @@ public class AddProductController implements Initializable {
         }
     }
 
+    /**
+     * Shows an alert box if no search results were found (search parts)
+     * @param header
+     * @param content
+     */
     private void noResultAlert(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait().ifPresent(response -> {
-
         });
     }
 
     /**
-     * Changes the color of the text fields that has invalid data
+     * Changes the color of the text fields that has invalid data to red and valid data to green
      */
     public void presentErrors() {
         if(!maxCheck) {
@@ -553,6 +526,10 @@ public class AddProductController implements Initializable {
         }
     }
 
+    /**
+     * Checks if the inventory information is logically valid (min < inv < max)
+     * @return True if minCheck, maxCheck, and invCheck are true after method
+     */
     private boolean checkIfInvValid() {
         boolean isValid = false;
         try {
@@ -585,22 +562,15 @@ public class AddProductController implements Initializable {
                 isValid = true;
             }
         }catch (Exception e) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setHeaderText("Numbers only for inv, min, and max");
-//            alert.setContentText("Please only include numbers for inventory, min, and max");
-//            alert.showAndWait().ifPresent(response -> {
-//
-//            });
+            System.err.println("Numbers not provided in min, max, and/or inv");
         }
         if(!maxCheck || !minCheck || !invCheck) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Numbers only for inv, min, and max");
             alert.setContentText("Please only include numbers for inventory, min, and max");
             alert.showAndWait().ifPresent(response -> {
-
             });
         }
-//        presentErrors();
         return isValid;
     }
 
@@ -615,6 +585,9 @@ public class AddProductController implements Initializable {
         nameCheck = false;
     }
 
+    /**
+     * Shows an error alert box when product is not created
+     */
     private void errorAlertBox() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText("Product was not created");
@@ -623,5 +596,4 @@ public class AddProductController implements Initializable {
 
         });
     }
-    //TODO: Logical errors for inventory
 }

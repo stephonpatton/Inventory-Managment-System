@@ -159,43 +159,6 @@ public class MainController extends Application implements Initializable {
         }
     }
 
-    //TODO: Maybe delete if fully functional later
-    public void openModifyPartWindow(ActionEvent actionEvent) {
-        Parent root;
-        try {
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/ModifyPart.fxml")));
-            Stage stage = new Stage();
-            stage.setTitle("Modify Part");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.setResizable(false);
-            stage.show();
-            // Hide this current window (if this is what you want)
-            ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //TODO: Maybe delete if fully functional later
-    public void openModifyProductWindow(ActionEvent actionEvent) {
-        Parent root;
-        try {
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../View_Controller/ModifyProduct.fxml")));
-            Stage stage = new Stage();
-            stage.setTitle("Add Product");
-            stage.setScene(new Scene(root, 920, 500));
-            stage.setResizable(false);
-            stage.show();
-            // Hide this current window (if this is what you want)
-            ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     /**
      * Opens the add product window upon a click
      * @param actionEvent button being pressed
@@ -252,7 +215,6 @@ public class MainController extends Application implements Initializable {
                 alert.setHeaderText("Please select a part to modify");
                 alert.setContentText("A part must be selected in order to modify");
                 alert.showAndWait().ifPresent(response -> {
-
                 });
             } else {
                 tempPart = partsTableView.getSelectionModel().getSelectedItem();
@@ -282,7 +244,6 @@ public class MainController extends Application implements Initializable {
                 alert.setHeaderText("Please select product to modify");
                 alert.setContentText("A product must be selected in order to modify");
                 alert.showAndWait().ifPresent(response -> {
-
                 });
             } else {
                 tempProduct = productTableView.getSelectionModel().getSelectedItem();
@@ -332,21 +293,17 @@ public class MainController extends Application implements Initializable {
         return tempPartIndex;
     }
 
-    //TODO: Confirmation dialog for deletion
-
     /**
      * Deletes a part from the table after the delete button is pressed
      */
     public void deletePartFromTable() {
         //Gets the part from the table
         tempPartIndex = getAllParts().indexOf(tempPart);
-
         if(partsTableView.getSelectionModel().getSelectedItem() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Please select a part to delete");
             alert.setContentText("A part must be selected in order to delete");
             alert.showAndWait().ifPresent(response -> {
-
             });
         } else {
             tempPart = partsTableView.getSelectionModel().getSelectedItem();
@@ -359,9 +316,9 @@ public class MainController extends Application implements Initializable {
             alert.showAndWait().ifPresent(response -> {
                 if (response == deleteButton) {
                     if (deletePart(tempPart)) {
-                        System.out.println("Successfully deleted");
+                        System.err.println("Successfully deleted");
                     } else {
-                        System.out.println("Was not deleted");
+                        System.err.println("Was not deleted");
                     }
                 } else if (response == cancelButton) {
                     alert.close();
@@ -380,7 +337,6 @@ public class MainController extends Application implements Initializable {
             alert.setHeaderText("Please select a product to delete from the inventory");
             alert.setContentText("A product must be selected in order to delete from inventory");
             alert.showAndWait().ifPresent(response -> {
-
             });
         } else {
             tempProduct = productTableView.getSelectionModel().getSelectedItem();
@@ -400,14 +356,13 @@ public class MainController extends Application implements Initializable {
                 alert.showAndWait().ifPresent(response -> {
                     if(response == yesButton) {
                         if (deleteProduct(tempProduct)) {
-                            System.out.println("Successfully deleted product");
+                            System.err.println("Successfully deleted product");
                         } else {
                             Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Error removing product");
                             errorAlert.setContentText("There was an error removing product, please try again");
                             errorAlert.showAndWait().ifPresent(reply -> {
-
                             });
-                            System.out.println("Was not deleted");
+                            System.err.println("Was not deleted");
                         }
                     } else if(response == noButton){
                         alert.close();
@@ -433,7 +388,7 @@ public class MainController extends Application implements Initializable {
         }
         //Checks if there is no match
         if(searchPart.size() == 0 ) {
-            System.out.println("No ID matches for part");
+            System.err.println("No ID matches for part");
         }
         return searchPart;
     }
@@ -459,12 +414,11 @@ public class MainController extends Application implements Initializable {
         return searchPart;
     }
 
-    private void noResultAlert(String header, String content) {
+    private void noResultAlert(String header) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.setContentText("No results were found for this search");
         alert.showAndWait().ifPresent(response -> {
-
         });
     }
 
@@ -480,7 +434,7 @@ public class MainController extends Application implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchPartById(query);
             if(idList.size() == 0) {
-                noResultAlert("No results found for part", "No results were found for this search");
+                noResultAlert("No results found for part");
                 updatePartsTable();
             } else {
                 partsTableView.setItems(idList);
@@ -489,7 +443,7 @@ public class MainController extends Application implements Initializable {
             //checks if query is string (for name)
             ObservableList<Part> tmpList = searchPartByName(query);
             if(tmpList.size() == 0) {
-                noResultAlert("No results found for part", "No results were found for this search");
+                noResultAlert("No results found for part");
                 updatePartsTable();
             } else {
                 partsTableView.setItems(tmpList);
@@ -514,11 +468,16 @@ public class MainController extends Application implements Initializable {
         }
         //Checks if there was no matches
         if(idList.size() == 0 ) {
-            System.out.println("No ID matches for product");
+            System.err.println("No ID matches for product");
         }
         return idList;
     }
 
+    /**
+     * Searches inventory for products based on a name query (or partial name)
+     * @param query
+     * @return ObservableList of products that match the search query
+     */
     public ObservableList<Product> searchProductByName(String query) {
         //Temporary list of results
         ObservableList<Product> searchProduct = FXCollections.observableArrayList();
@@ -530,7 +489,7 @@ public class MainController extends Application implements Initializable {
         }
         //Checks if there are no results
         if(searchProduct.size() == 0) {
-            System.out.println("No results for product name");
+            System.err.println("No results for product name");
         }
         return searchProduct;
     }
@@ -547,7 +506,7 @@ public class MainController extends Application implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchProductById(query);
             if(idList.size() == 0) {
-                noResultAlert("No results found for product", "No results were found for this search");
+                noResultAlert("No results found for product");
                 updateProductsTable();
             } else {
                 productTableView.setItems(idList);
@@ -557,7 +516,7 @@ public class MainController extends Application implements Initializable {
             ObservableList<Product> tmpList = searchProductByName(query);
             //Checks if results were not found
             if(tmpList.size() == 0) {
-                noResultAlert("No results found for product", "No results were found for this search");
+                noResultAlert("No results found for product");
                 updateProductsTable();
             } else {
                 productTableView.setItems(tmpList);

@@ -18,7 +18,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -77,6 +76,7 @@ public class ModifyProductController implements Initializable {
     int indexOfProduct = productIndexToModify();
 
 
+    //Boolean variables for field error highlighting
     private boolean nameCheck;
     private boolean invCheck;
     private boolean priceCheck;
@@ -187,9 +187,9 @@ public class ModifyProductController implements Initializable {
             alert.showAndWait().ifPresent(response -> {
                 if(response == deleteButton) {
                     if (productToModify().deleteAssociatedPart(partToRemove)) {
-                        System.out.println("successfully deleted association");
+                        System.err.println("successfully deleted association");
                     } else {
-                        System.out.println("Association was not deleted");
+                        System.err.println("Association was not deleted");
                     }
                 } else if(response == cancelButton) {
                     alert.close();
@@ -226,13 +226,7 @@ public class ModifyProductController implements Initializable {
             if (checkIfInvValid()) {
                 if (createProduct()) {
                     cancelModifyProduct(actionEvent);
-                } else {
-//                    setAllChecksToFalse();
                 }
-            } else {
-//                maxCheck = false;
-//                minCheck = false;
-//                invCheck = false;
             }
             presentErrors();
         }
@@ -307,6 +301,9 @@ public class ModifyProductController implements Initializable {
         checkNameField();
     }
 
+    /**
+     * Checks name field to make sure valid input data is provided
+     */
     private void checkNameField() {
         String input = modifyProductNameTF.getText();
         char[] chars = input.toCharArray();
@@ -320,7 +317,6 @@ public class ModifyProductController implements Initializable {
             if(input.length() == 0 || input.matches("[0-9]*")) {
                 System.err.println("Provide a name please");
                 nameCheck = false;
-                //TODO: TOMORROW
             } else {
                 System.out.println(sb);
                 nameCheck = true;
@@ -370,13 +366,10 @@ public class ModifyProductController implements Initializable {
         try {
             tryInt = Integer.parseInt(input.trim());
             minCheck = true;
-            System.out.println("minCheck changed to " + minCheck);
         }catch(Exception e) {
             System.err.println("Please provide a number for min");
             minCheck = false;
-            System.out.println("minCheck changed to " + minCheck);
         }
-        System.out.println("value of minCheck " + minCheck);
     }
 
     /**
@@ -405,14 +398,11 @@ public class ModifyProductController implements Initializable {
         try {
             tryInt = Integer.parseInt(input.trim());
             minCheck = true;
-            System.out.println("minCheck changed to " + minCheck);
             isTheSame = tryInt == productToModify().getMin();
         }catch(Exception e) {
             System.err.println("Please provide a number for min");
             minCheck = false;
         }
-        System.out.println("value of minCheck " + minCheck);
-
         return isTheSame;
     }
 
@@ -430,7 +420,6 @@ public class ModifyProductController implements Initializable {
             isTheSame = tryInt == productToModify().getMax();
         }catch(Exception e) {
             maxCheck = false;
-
             System.err.println("Please provide a number for max");
         }
 
@@ -528,12 +517,15 @@ public class ModifyProductController implements Initializable {
         return created;
     }
 
-    private void noResultAlert(String header, String content) {
+    /**
+     * Displays an alert box for no search results found for parts
+     *
+     */
+    private void noResultAlert() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.setHeaderText("No results found for part");
+        alert.setContentText("No results were found for this search");
         alert.showAndWait().ifPresent(response -> {
-
         });
     }
 
@@ -550,7 +542,7 @@ public class ModifyProductController implements Initializable {
             }
         }
         if(searchPart.size() == 0 ) {
-            System.out.println("No ID matches for part");
+            System.err.println("No ID matches for part");
         }
         return searchPart;
     }
@@ -568,7 +560,7 @@ public class ModifyProductController implements Initializable {
             }
         }
         if(searchPart.size() == 0 ) {
-            System.out.println("No results for part name");
+            System.err.println("No results for part name");
         }
         return searchPart;
     }
@@ -582,7 +574,7 @@ public class ModifyProductController implements Initializable {
         if(query.matches("[0-9]*") && query.length() != 0) {
             idList = searchPartById(query);
             if(idList.size() == 0) {
-                noResultAlert("No results found for part", "No results were found for this search");
+                noResultAlert();
                 updatePartsTable();
             } else {
                 availablePartTableView.setItems(idList);
@@ -590,7 +582,7 @@ public class ModifyProductController implements Initializable {
         } else {
             ObservableList<Part> tmpList = searchPartByName(query);
             if(tmpList.size() == 0) {
-                noResultAlert("No results found for part", "No results were found for this search");
+                noResultAlert();
                 updatePartsTable();
             } else {
                 availablePartTableView.setItems(tmpList);
@@ -605,6 +597,10 @@ public class ModifyProductController implements Initializable {
         availablePartTableView.setItems(Inventory.getAllParts());
     }
 
+    /**
+     * Checks if inventory data is logically valid
+     * @return True if inventory data is logically valid
+     */
     private boolean checkIfInvValid() {
         boolean isValid = false;
         try {
@@ -637,12 +633,7 @@ public class ModifyProductController implements Initializable {
                 isValid = true;
             }
         }catch (Exception e) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setHeaderText("Numbers only for inv, min, and max");
-//            alert.setContentText("Please only include numbers for inventory, min, and max");
-//            alert.showAndWait().ifPresent(response -> {
-//
-//            });
+            System.err.println("Numbers only for inv data");
         }
         if(!maxCheck || !minCheck || !invCheck) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -652,9 +643,6 @@ public class ModifyProductController implements Initializable {
 
             });
         }
-//        presentErrors();
         return isValid;
     }
-
-    //TODO: Error boxes maybe?
 }

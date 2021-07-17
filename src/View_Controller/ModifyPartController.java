@@ -96,9 +96,10 @@ public class ModifyPartController implements Initializable {
      */
     public boolean createPart() {
         boolean created = false;
-        //Gets input data
+        //Checks all fields for errors
         if(checkAllErrors()) {
             try {
+                //Tries to get input data
                 String partName = modifyPartNameTF.getText();
                 double partPrice = Double.parseDouble(modifyPartPriceTF.getText());
                 int partStock = Integer.parseInt(modifyPartInvTF.getText());
@@ -151,7 +152,6 @@ public class ModifyPartController implements Initializable {
                 alert.setHeaderText("Unable to create part");
                 alert.setContentText("Please check fields highlighted in red to fix errors");
                 alert.showAndWait().ifPresent(response -> {
-
                 });
                 System.err.println("Error creating part.. Check fields in red");
             }
@@ -160,6 +160,10 @@ public class ModifyPartController implements Initializable {
         return created;
     }
 
+    /**
+     * Checks all fields to see if valid data is provided
+     * @return True if valid data is provided
+     */
     public boolean checkAllErrors() {
         boolean isValid = false;
         if(sourceButton.isSelected()) {
@@ -178,9 +182,10 @@ public class ModifyPartController implements Initializable {
         return isValid;
     }
 
+
     /**
-     * Returns true if no differences
-     * Returns false if differences are present
+     * Checks if differences are present between input and part being modified
+     * @return True if no differences are present
      */
     public boolean checkDifferences() {
         //Checks if data inputted is different from data already in inventory
@@ -257,10 +262,6 @@ public class ModifyPartController implements Initializable {
      * @param actionEvent Save button pressed
      */
     public void modifyPartSave(ActionEvent actionEvent) {
-//        if (!checkDifferences()) {
-//            System.out.println("Created part");
-//        }
-//        cancelModifyPart(actionEvent);
         if(checkDifferences()) {
             cancelModifyPart(actionEvent);
         } else if(!checkDifferences()) {
@@ -282,15 +283,9 @@ public class ModifyPartController implements Initializable {
         }
     }
 
-    private void setAllChecksToTrue() {
-        companyNameCheck = true;
-        nameCheck = true;
-        maxCheck = true;
-        minCheck = true;
-        priceCheck = true;
-        invCheck = true;
-    }
-
+    /**
+     * Checks if inventory data is logically valid (used for field highlighting as well)
+     */
     private void checkIfInvValid() {
         int min = Integer.parseInt(modifyPartMinTF.getText());
         int max = Integer.parseInt(modifyPartMaxTF.getText());
@@ -388,13 +383,11 @@ public class ModifyPartController implements Initializable {
         try {
             tryMax = Integer.parseInt(input.trim());
             maxCheck = true;
-            System.out.println("maxCheck changed to " + maxCheck);
             isTheSame = tryMax == partToModify().getMax();
         }catch(Exception e) {
             System.err.println("Please provide a number for max");
             maxCheck = false;
         }
-        System.out.println("Value of maxCheck" + maxCheck);
         return isTheSame;
     }
 
@@ -409,16 +402,17 @@ public class ModifyPartController implements Initializable {
         try {
             tryMin = Integer.parseInt(input.trim());
             minCheck = true;
-            System.out.println("minCheck changed to " + minCheck);
             isTheSame = tryMin == partToModify().getMin();
         }catch(Exception e) {
             System.err.println("Please provide a number for min");
             minCheck = false;
         }
-        System.out.println("Value of minCheck" + minCheck);
         return isTheSame;
     }
 
+    /**
+     * Sets all field checks to false for error handling resetting
+     */
     private void setAllChecksToFalse() {
         maxCheck = false;
         minCheck = false;
@@ -429,6 +423,9 @@ public class ModifyPartController implements Initializable {
         nameCheck = true;
     }
 
+    /**
+     * Method that uses all field checking methods in one
+     */
     private void checkAllFields() {
         checkPriceField();
         checkInvField();
@@ -438,6 +435,9 @@ public class ModifyPartController implements Initializable {
         checkNameField();
     }
 
+    /**
+     * Checks name field to make sure valid data is provided and sets check to true or false for error highlighting
+     */
     private void checkNameField() {
         String input = modifyPartNameTF.getText();
         if(input.matches(".*\\d.*") || input.length() == 0){
@@ -448,23 +448,24 @@ public class ModifyPartController implements Initializable {
         }
     }
 
-    //TODO: Fix name field
-
+    /**
+     * Checks min field to make sure valid data is provided and sets check to true or false for error highlighting
+     */
     private void checkMinFields() {
         String input = modifyPartMinTF.getText();
         int tryInt;
         try {
             tryInt = Integer.parseInt(input.trim());
             minCheck = true;
-            System.out.println("minCheck changed to " + minCheck);
         }catch(Exception e) {
             System.err.println("Please provide a number for min");
             minCheck = false;
-            System.out.println("minCheck changed to " + minCheck);
         }
-        System.out.println("value of minCheck " + minCheck);
     }
 
+    /**
+     * Checks max field to make sure valid data is provided and sets check to true or false for error highlighting
+     */
     private void checkMaxField() {
         String input = modifyPartMaxTF.getText();
         int tryInt = 0;
@@ -477,6 +478,9 @@ public class ModifyPartController implements Initializable {
         }
     }
 
+    /**
+     * Checks inventory field to make sure valid data is provided and sets check to true or false for error highlighting
+     */
     private void checkInvField() {
         String input = modifyPartInvTF.getText();
         int tryInt = 0;
@@ -489,6 +493,9 @@ public class ModifyPartController implements Initializable {
         }
     }
 
+    /**
+     * Checks price field to make sure valid data is provided and sets check to true or false for error highlighting
+     */
     private void checkPriceField() {
         String input = modifyPartPriceTF.getText();
         double tryDouble = 0;
@@ -501,6 +508,9 @@ public class ModifyPartController implements Initializable {
         }
     }
 
+    /**
+     * Checks machine ID/company name field to make sure valid data is provided and sets check to true or false for error highlighting
+     */
     private void checkMachineIdFields() {
         if(sourceButton.isSelected()) {
             String input = modifyPartMachineCompTF.getText();
@@ -523,6 +533,9 @@ public class ModifyPartController implements Initializable {
         }
     }
 
+    /**
+     * Displays the errors for input data. Green for valid data and red for invalid data
+     */
     public void presentErrors() {
         if(!nameCheck) {
             modifyPartNameTF.setStyle("-fx-border-color: #ae0700");
@@ -564,6 +577,5 @@ public class ModifyPartController implements Initializable {
         }
     }
 
-    //TODO: Logical handling inv max min
 }
 
