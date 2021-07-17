@@ -378,6 +378,12 @@ public class AddPartController implements Initializable {
         }
     }
 
+
+    /*
+     * "RUNTIME ERROR"
+     * NumberFormatException when trying to convert string type into an int for part creation.
+     * Had to encapsulate the code in a try-catch in order to catch the error if invalid data is provided.
+     */
     /**
      * Creates the part object after all data is submitted and adds it to the ObservableList
      */

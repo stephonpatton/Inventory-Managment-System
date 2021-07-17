@@ -23,6 +23,16 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/*
+ * Javadoc location: /out/javadoc/index.html
+ */
+
+
+/*
+ * "FUTURE ENHANCEMENT":
+ * 1. Implement a small databased with the application so data can persist after application close
+ * 2. Maybe provide exact measurements and placement X's and Y's for JavaFX objects so application can be consistent with application in demonstration video
+ */
 
 public class MainController extends Application implements Initializable {
     //Table of products
@@ -63,8 +73,8 @@ public class MainController extends Application implements Initializable {
 
     /**
      * Starts application and loads up main screen (mainform.fxml)
-     * @param primaryStage
-     * @throws Exception
+     * @param primaryStage main stage to be set after starting
+     * @throws Exception if it fails to start properly
      */
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -77,14 +87,13 @@ public class MainController extends Application implements Initializable {
 
     /**
      * Main method for the entire program. Loads in sample data and uses FXML launch command to start
-     * @param args
+     * @param args default arguments with java programs
      */
-    //TODO: Tell evaluators where javadocs folder is
-    //TODO: Comment everything
     public static void main(String[] args) {
         //Below is sample data for the application to load (includes parts and products)
-        Product bike = new Product(1, "Bike", 2, 1, 0, 20);
-        Product motorcycle = new Product(2, "Motorcycle", 2, 1, 0, 20);
+        Product giantBicycle = new Product(1, "Giant Bicycle", 200.95, 1, 1, 20);
+        Product scottBicycle = new Product(2, "Scott Bicycle", 2, 1, 1, 20);
+        Product gtBike = new Product(3, "GT Bike", 25000, 2, 1, 10);
 
         Part axle = new InhousePart(1, "Axle", 204.99, 1, 1, 20, 200);
         Part tires = new InhousePart(2, "Tires", 102.90, 200, 1, 20, 10);
@@ -92,11 +101,21 @@ public class MainController extends Application implements Initializable {
 
         Part windows = new OutsourcedPart(4, "Windows", 529, 3, 1, 50, "Glass R US");
         Part wipers = new OutsourcedPart(5, "Wipers", 9.99, 52, 1, 760, "Wipers R US");
+        Part rims = new OutsourcedPart(6, "Rims", 249.99, 40, 1, 400, "Rims R Us");
         //End of sample data creation
 
+        //Sampling product associations
+        giantBicycle.addAssociatePart(brakes);
+        gtBike.addAssociatePart(tires);
+        gtBike.addAssociatePart(tires);
+        scottBicycle.addAssociatePart(axle);
+        scottBicycle.addAssociatePart(rims);
+        scottBicycle.addAssociatePart(rims);
+
         //Adding sample products to inventory
-        Inventory.addProduct(bike);
-        Inventory.addProduct(motorcycle);
+        Inventory.addProduct(giantBicycle);
+        Inventory.addProduct(scottBicycle);
+        Inventory.addProduct(gtBike);
 
         //Adding sample parts to inventory
         Inventory.addPart(axle);
@@ -104,14 +123,15 @@ public class MainController extends Application implements Initializable {
         Inventory.addPart(brakes);
         Inventory.addPart(windows);
         Inventory.addPart(wipers);
+        Inventory.addPart(rims);
 
         launch(args);
     }
 
     /**
      * Loads in the controller that has the data for tables when the page is loaded
-     * @param url
-     * @param rb
+     * @param url an absolute url that javafx uses
+     * @param rb bundle that javafx uses
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -138,7 +158,7 @@ public class MainController extends Application implements Initializable {
 
     /**
      * Opens up the Add Part page when the add button is pressed
-     * @param actionEvent
+     * @param actionEvent when a button is pressed
      */
     public void openAddPartWindow(ActionEvent actionEvent) {
         Parent root;
@@ -475,7 +495,7 @@ public class MainController extends Application implements Initializable {
 
     /**
      * Searches inventory for products based on a name query (or partial name)
-     * @param query
+     * @param query Provided by user to query the inventory
      * @return ObservableList of products that match the search query
      */
     public ObservableList<Product> searchProductByName(String query) {
