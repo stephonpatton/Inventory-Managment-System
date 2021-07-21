@@ -280,15 +280,26 @@ public class AddProductController implements Initializable {
     public void addPartToProduct() {
         //Get part to add
         partToAdd = availablePartTableView.getSelectionModel().getSelectedItem();
-        //Add to tempList to add to product
-        tempList.add(partToAdd);
 
-        //Set added parts table
-        addProductAddedPartsTableView.setItems(tempList);
-        addedPartsId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        addedPartsName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        addedPartsInv.setCellValueFactory(new PropertyValueFactory<>("stock"));
-        addedPartsPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        if(partToAdd == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("No part was selected to add");
+            alert.setContentText("Please select a part to add to the product");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        } else {
+            //Add to tempList to add to product
+            tempList.add(partToAdd);
+
+            //Set added parts table
+            addProductAddedPartsTableView.setItems(tempList);
+            addedPartsId.setCellValueFactory(new PropertyValueFactory<>("id"));
+            addedPartsName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            addedPartsInv.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            addedPartsPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        }
+
     }
 
     /**
@@ -298,19 +309,29 @@ public class AddProductController implements Initializable {
         //Get part to remove from product/table
         partToRemove = addProductAddedPartsTableView.getSelectionModel().getSelectedItem();
 
-        //Setting up and show alert dialog for confirmation
-        ButtonType deleteButton = new ButtonType("Delete");
-        ButtonType cancelButton = new ButtonType("Cancel");
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete part association", deleteButton, cancelButton);
-        alert.setContentText("Are you sure you want to remove the part association?");
-        alert.setHeaderText("Delete part association");
-        alert.showAndWait().ifPresent(response -> {
-            if(response == deleteButton) {
-                tempList.remove(partToRemove);
-            } else if(response == cancelButton) {
-                alert.close();
-            }
-        });
+        if(partToRemove == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("No part was selected to remove");
+            alert.setContentText("Please select a part to remove from the product");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        } else {
+            //Setting up and show alert dialog for confirmation
+            ButtonType deleteButton = new ButtonType("Delete");
+            ButtonType cancelButton = new ButtonType("Cancel");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete part association", deleteButton, cancelButton);
+            alert.setContentText("Are you sure you want to remove the part association?");
+            alert.setHeaderText("Delete part association");
+            alert.showAndWait().ifPresent(response -> {
+                if(response == deleteButton) {
+                    tempList.remove(partToRemove);
+                } else if(response == cancelButton) {
+                    alert.close();
+                }
+            });
+        }
+
     }
 
     /**

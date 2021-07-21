@@ -177,26 +177,35 @@ public class ModifyProductController implements Initializable {
     public void removeAddedParts() {
         //Gets part being removed
         partToRemove = addedPartsTable.getSelectionModel().getSelectedItem();
-        try {
-            //Setting alert box for part association removal
-            ButtonType deleteButton = new ButtonType("Delete");
-            ButtonType cancelButton = new ButtonType("Cancel");
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete part association", deleteButton, cancelButton);
-            alert.setContentText("Are you sure you want to remove the part association?");
-            alert.setHeaderText("Delete part association");
+        if(partToRemove == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("No part was selected to remove");
+            alert.setContentText("Please select a part to remove from the product");
             alert.showAndWait().ifPresent(response -> {
-                if(response == deleteButton) {
-                    if (productToModify().deleteAssociatedPart(partToRemove)) {
-                        System.err.println("successfully deleted association");
-                    } else {
-                        System.err.println("Association was not deleted");
-                    }
-                } else if(response == cancelButton) {
-                    alert.close();
-                }
+
             });
-        }catch(Exception e) {
-            System.err.println("Please select a part to remove association");
+        } else {
+            try {
+                //Setting alert box for part association removal
+                ButtonType deleteButton = new ButtonType("Delete");
+                ButtonType cancelButton = new ButtonType("Cancel");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete part association", deleteButton, cancelButton);
+                alert.setContentText("Are you sure you want to remove the part association?");
+                alert.setHeaderText("Delete part association");
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == deleteButton) {
+                        if (productToModify().deleteAssociatedPart(partToRemove)) {
+                            System.err.println("successfully deleted association");
+                        } else {
+                            System.err.println("Association was not deleted");
+                        }
+                    } else if (response == cancelButton) {
+                        alert.close();
+                    }
+                });
+            } catch (Exception e) {
+                System.err.println("Please select a part to remove association");
+            }
         }
     }
 
@@ -207,9 +216,19 @@ public class ModifyProductController implements Initializable {
         //Gets the part being added to the product
         partToAdd = availablePartTableView.getSelectionModel().getSelectedItem();
 
-        //Adds to product
-        productToModify().addAssociatePart(partToAdd);
-        populateAddedPartsTable();
+        if(partToAdd == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("No part was selected to add");
+            alert.setContentText("Please select a part to add to the product");
+            alert.showAndWait().ifPresent(response -> {
+
+            });
+        } else {
+            //Adds to product
+            productToModify().addAssociatePart(partToAdd);
+            populateAddedPartsTable();
+        }
+
     }
 
     /**
