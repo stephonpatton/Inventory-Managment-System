@@ -287,29 +287,40 @@ public class ModifyPartController implements Initializable {
      * Checks if inventory data is logically valid (used for field highlighting as well)
      */
     private void checkIfInvValid() {
-        int min = Integer.parseInt(modifyPartMinTF.getText());
-        int max = Integer.parseInt(modifyPartMaxTF.getText());
-        int inv = Integer.parseInt(modifyPartInvTF.getText());
+        try {
+            int min = Integer.parseInt(modifyPartMinTF.getText());
+            int max = Integer.parseInt(modifyPartMaxTF.getText());
+            int inv = Integer.parseInt(modifyPartInvTF.getText());
+            if (min > max) {
+                minCheck = false;
+                maxCheck = false;
+            }
 
-        if(min > max) {
-            minCheck = false;
-            maxCheck = false;
+            if (inv < min) {
+                invCheck = false;
+                minCheck = false;
+            }
+
+            if (inv > max) {
+                invCheck = false;
+                maxCheck = false;
+            }
+
+            if ((inv <= max) && (inv >= min)) {
+                invCheck = true;
+                maxCheck = true;
+                minCheck = true;
+            }
+        }catch(Exception e) {
+            System.err.println("Numbers only for inv data");
         }
+        if(!maxCheck || !minCheck || !invCheck) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Numbers only for inv, min, and max");
+            alert.setContentText("Please only include numbers for inventory, min, and max");
+            alert.showAndWait().ifPresent(response -> {
 
-        if(inv < min) {
-            invCheck = false;
-            minCheck = false;
-        }
-
-        if(inv > max) {
-            invCheck = false;
-            maxCheck = false;
-        }
-
-        if((inv <= max) && (inv >= min)) {
-            invCheck = true;
-            maxCheck = true;
-            minCheck = true;
+            });
         }
     }
 
